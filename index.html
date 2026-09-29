@@ -5,16 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Perth to Margaret River, six days</title>
 <meta name="description" content="Six days of Rottnest quokkas, karri forest, wineries and three nights of home cooking. Day-by-day plan and map.">
-<!-- Link preview (WhatsApp, Telegram, iMessage, Slack...). Replace YOUR-SITE with your GitHub Pages address, e.g. raymond.github.io/perth-trip -->
+<!-- Link preview (WhatsApp, Telegram, iMessage, Slack...) -->
 <meta property="og:type" content="website">
 <meta property="og:title" content="Perth to Margaret River, six days">
 <meta property="og:description" content="Six days of Rottnest quokkas, karri forest, wineries and three nights of home cooking. Day-by-day plan and map.">
-<meta property="og:url" content="https://YOUR-SITE/">
-<meta property="og:image" content="https://YOUR-SITE/preview.png">
+<meta property="og:url" content="https://cozinater.github.io/perth-trip/">
+<meta property="og:image" content="https://cozinater.github.io/perth-trip/preview.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://YOUR-SITE/preview.png">
+<meta name="twitter:image" content="https://cozinater.github.io/perth-trip/preview.png">
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css">
 <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
@@ -123,6 +123,34 @@ ol.stops li{display:grid;grid-template-columns:5.5rem 1fr;gap:.25rem 1rem;paddin
 .what a{font-family:var(--head);font-size:.85rem;color:var(--gum);text-underline-offset:3px}
 .cook{border-left:3px solid var(--sun);padding-left:.75rem}
 
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:.75rem 1rem}
+.btn{font-family:var(--head);font-weight:700;font-size:.95rem;border:1px solid var(--line);background:transparent;color:var(--ink);padding:.5rem 1rem;border-radius:10px;cursor:pointer}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.link{font-family:var(--head);font-size:.85rem;color:var(--gum);background:none;border:0;padding:0;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.stays{display:grid;gap:.75rem;margin:0 0 1.5rem}
+.stayname{font-family:var(--head);font-weight:700;font-size:1.2rem;line-height:1.2;margin:0}
+.stay .ap{display:block;margin:.1rem 0 0}
+.stay .note{color:var(--muted);font-size:1rem;margin:.35rem 0 0}
+.stay .acts{display:flex;gap:1rem;margin:.6rem 0 0}
+.stay .acts a{font-family:var(--head);font-size:.85rem;color:var(--gum);text-underline-offset:3px}
+.todo{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:.9rem 1rem;margin:0 0 1.5rem}
+.todo h2{font-family:var(--head);font-size:1.15rem;margin:0}
+.todo ul{list-style:none;margin:.5rem 0 0;padding:0}
+.todo label{display:flex;gap:.6rem;align-items:baseline;padding:.25rem 0;cursor:pointer}
+.todo input{accent-color:var(--gum);width:1.05rem;height:1.05rem;flex:0 0 auto;transform:translateY(.12em)}
+.todo input:checked + span{color:var(--muted);text-decoration:line-through}
+.hint{color:var(--muted);font-size:.95rem;margin:.2rem 0 0}
+dialog{border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--ink);padding:1.25rem;width:min(520px,calc(100vw - 2rem));max-height:calc(100dvh - 2rem)}
+dialog::backdrop{background:rgba(10,20,30,.5)}
+dialog h2{font-family:var(--head);font-size:1.4rem;margin:0}
+dialog .hint{margin-bottom:.75rem}
+fieldset{border:0;border-top:1px solid var(--line);margin:0;padding:.8rem 0 .9rem;display:grid;gap:.6rem;min-width:0}
+legend{font-family:var(--head);font-weight:700;padding:.8rem 0 0;float:left;width:100%}
+dialog label{display:grid;gap:.2rem;font-family:var(--head);font-size:.85rem;color:var(--muted)}
+dialog input{font-family:var(--body);font-size:1rem;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:.45rem .6rem;width:100%;min-width:0}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+dialog .acts{display:flex;justify-content:flex-end;gap:.5rem;padding-top:.75rem;border-top:1px solid var(--line)}
+
 .changed{margin-top:1rem;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:.9rem 1rem;font-size:1rem}
 .changed p{margin:.25rem 0}
 .changed h3{font-family:var(--head);font-size:1rem;margin:0 0 .25rem}
@@ -134,7 +162,7 @@ ol.stops li{display:grid;grid-template-columns:5.5rem 1fr;gap:.25rem 1rem;paddin
 </head>
 <body>
 <main class="page">
-  <header class="top"><h1>Perth to Margaret River, six days</h1></header>
+  <header class="top"><h1>Perth to Margaret River, six days</h1><button class="btn" type="button" data-edit="start">Trip details</button></header>
   <nav class="tabs" id="daypick" aria-label="Choose a day"></nav>
   <div class="layout">
     <div class="mapcol">
@@ -156,62 +184,86 @@ ol.stops li{display:grid;grid-template-columns:5.5rem 1fr;gap:.25rem 1rem;paddin
         <div class="route">
           <div class="end"><span class="code">PER</span><span class="tm">6:30 pm</span><span class="ap">Perth Airport</span></div>
           <div class="path"><span class="dur">&nbsp;</span><span class="rule"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg></span><span class="dur">Nonstop</span></div>
-          <div class="end r"><span class="code">SIN</span><span class="tm tbc">To confirm</span><span class="ap">Changi</span></div>
+          <div class="end r"><span class="code">SIN</span><span class="tm tbc" id="home-arr">To confirm</span><span class="ap">Changi</span></div>
         </div>
-        <p class="meta">Scoot, flight number to confirm</p>
+        <p class="meta"><span id="home-flight">Scoot, flight number to confirm</span> <button class="link" type="button" data-edit="home">Edit</button></p>
       </article>
     </div>
-    <p class="drive" data-day="-1">About 700 km of driving, all in one rental car.</p>
+    <div class="stays" id="stays"></div>
+    <p class="drive" data-day="-1">About 900 km of driving, all in one rental car.</p>
+    <section class="todo" id="todo" data-day="-1" aria-labelledby="todo-h"></section>
       <section id="days"></section>
     </div>
   </div>
 </main>
 
+<dialog id="editor" aria-labelledby="ed-title">
+  <form id="edform" method="dialog">
+    <h2 id="ed-title">Trip details</h2>
+    <p class="hint">Saved only in this browser. Other people and devices won't see it, and it never goes on the public site.</p>
+    <fieldset id="f-start"><legend>Dates</legend>
+      <label>The Saturday you fly in<input type="date" name="start"></label>
+    </fieldset>
+    <fieldset id="f-home"><legend>Flight home</legend>
+      <div class="pair">
+        <label>Flight number<input name="home.flight" placeholder="TR 000" autocomplete="off"></label>
+        <label>Lands in Singapore<input name="home.arr" placeholder="11:30 pm" autocomplete="off"></label>
+      </div>
+    </fieldset>
+    <div id="f-stays"></div>
+    <div class="acts"><button class="btn" type="button" id="ed-cancel">Cancel</button><button class="btn primary" type="submit">Save</button></div>
+  </form>
+</dialog>
+
 <script>
 const days = [
-  { title:"Arrive and Fremantle", route:["Perth Airport","Little Creatures Brewery Fremantle"], day:"Saturday", base:"Fremantle", stops:[
+  { title:"Fly in, drive south", route:["Perth Airport","Margaret River WA"], day:"Saturday", base:"Margaret River", stops:[
     ["12:00 pm","Fly Scoot TR 8 from Changi"],
     ["5:10 pm","Land at Perth Airport, pick up the car","perth-airport"],
-    ["6:00 pm","Drive 30 minutes to Fremantle and check in","fremantle"],
-    ["7:30 pm","Dinner at Little Creatures on the harbour","little-creatures"]
+    ["5:45 pm","Drive about 2.5 hours south","margaret-river","The last stretch is after dark. Watch for kangaroos on the road."],
+    ["8:30 pm","Check in to the cabin and unpack","margaret-river"],
+    ["9:00 pm","Late casual dinner or wine on the deck","margaret-river"]
   ]},
-  { title:"Rottnest Island, then the markets", day:"Sunday", base:"Fremantle", stops:[
+  { title:"Rock pools and a Prevelly sunset", route:["Margaret River WA","Injidup Natural Spa","Swings & Roundabouts Yallingup","Margaret River WA","Surfers Point Prevelly","Margaret River WA"], day:"Sunday", base:"Margaret River", stops:[
+    ["9:30 am","Injidup Natural Spa rock pools near Yallingup","injidup","Free. Stay off the outer rocks when the swell is up."],
+    ["12:00 pm","Wood-fired pizza at Swings & Roundabouts or Wild Hop Brewing Co.","swings"],
+    ["3:00 pm","Butcher and supermarket run in Margaret River town","margaret-river"],
+    ["4:30 pm","Sunset picnic at Surfers Point, Prevelly","surfers-point","Bring a picnic mat."],
+    ["6:30 pm","Cooking night 1","margaret-river",null,true]
+  ]},
+  { title:"Karri forest and caves", route:["Margaret River WA","Boranup Forest","Lake Cave Margaret River","Margaret River Bakery","34 Degrees Blue Margaret River","Margaret River WA"], day:"Monday", base:"Margaret River", stops:[
+    ["9:30 am","Slow drive through Boranup Karri Forest","boranup"],
+    ["11:00 am","Lake Cave","lake-cave","Around 350 steps down and back up."],
+    ["1:30 pm","Pastries at Margaret River Bakery","mr-bakery"],
+    ["3:30 pm","Fresh fish or marron from 34 Degrees Blue","34-blue","On Station Road in town."],
+    ["6:30 pm","Cooking night 2: local seafood","margaret-river",null,true]
+  ]},
+  { title:"Wineries, cheese and Meelup", route:["Margaret River WA","Vasse Felix","Margaret River Dairy Company","Meelup Beach","Margaret River WA"], day:"Tuesday", base:"Margaret River", stops:[
+    ["10:30 am","Tasting at Vasse Felix or Voyager Estate","vasse-felix"],
+    ["2:00 pm","Local cheeses at Margaret River Dairy Company","mr-dairy","On Bussell Highway near Cowaramup."],
+    ["4:00 pm","Afternoon stroll along Meelup Beach","meelup","Calm, shallow water."],
+    ["6:30 pm","Cooking night 3, with the wines you've collected","margaret-river",null,true]
+  ]},
+  { title:"North to Perth, then Fremantle", route:["Margaret River WA","Bunbury Farmers Market","State War Memorial Kings Park","Elizabeth Quay Perth","Fremantle WA"], day:"Wednesday", base:"Fremantle", stops:[
+    ["9:00 am","Check out and start the drive north","margaret-river"],
+    ["11:30 am","Road snacks at Bunbury Farmers Market","bunbury","Open daily. Meat, cheese, bread and produce all under one roof."],
+    ["2:30 pm","Clifftop skyline view in Kings Park","kings-park","Free. The lookout is by the State War Memorial."],
+    ["4:00 pm","Elizabeth Quay, or coffee at the State Buildings","perth-cbd"],
+    ["5:30 pm","Drive 30 minutes to Fremantle and check in","fremantle"],
+    ["7:30 pm","Dinner at Bread in Common","bread-in-common","Wood-fired sharing plates."]
+  ]},
+  { title:"Rottnest Island", day:"Thursday", base:"Fremantle", stops:[
     ["8:00 am","Ferry from B-Shed, about 30 minutes","b-shed","Check your ticket: some sailings have been leaving from Northport instead."],
     ["9:00 am","E-bikes around the island and quokka spotting","rottnest","Pedal & Flipper hire is by the jetty. Lock the bikes whenever you stop."],
     ["12:30 pm","Lunch at Hotel Rottnest on the bay","hotel-rottnest","Keep an eye on your plate; the seagulls are bold."],
-    ["3:30 pm","Ferry back to Fremantle","b-shed"],
-    ["4:15 pm","Gift shopping at Fremantle Markets","freo-markets","Open until 6 pm, Friday to Sunday only."],
-    ["7:00 pm","Dinner in Fremantle town","fremantle"]
+    ["4:00 pm","Ferry back to Fremantle","b-shed"],
+    ["7:00 pm","Last-night dinner and craft beer at Little Creatures","little-creatures"]
   ]},
-  { title:"South to Margaret River", route:["Fremantle WA","Bunbury Farmers Market","Busselton Jetty","Margaret River WA"], day:"Monday", base:"Margaret River", stops:[
-    ["9:00 am","Check out and drive two hours south","fremantle"],
-    ["11:00 am","Big grocery run at Bunbury Farmers Market","bunbury","Open daily. Meat, cheese, bread and produce all under one roof."],
-    ["1:00 pm","Walk Busselton Jetty","busselton"],
-    ["3:30 pm","Check in to the cabin","margaret-river"],
-    ["6:30 pm","Cooking night 1","margaret-river",null,true]
-  ]},
-  { title:"Karri forest and caves", route:["Margaret River WA","Boranup Forest","Lake Cave Margaret River","Margaret River WA"], day:"Tuesday", base:"Margaret River", stops:[
-    ["9:30 am","Slow drive through Boranup Forest on Caves Road","boranup"],
-    ["11:00 am","Lake Cave","lake-cave","Around 350 steps down and back up."],
-    ["2:00 pm","Butcher and fish shop run in town","margaret-river"],
-    ["6:30 pm","Cooking night 2","margaret-river",null,true]
-  ]},
-  { title:"Wine, cheese and sunset", route:["Margaret River WA","Vasse Felix","Charcuterie Margaret River","Surfers Point Prevelly","Margaret River WA"], day:"Wednesday", base:"Margaret River", stops:[
-    ["10:30 am","Tasting at Vasse Felix or Voyager Estate","vasse-felix"],
-    ["1:30 pm","Cheese and cured meats at Charcuterie Margaret River","charcuterie","On Bussell Highway in town, with tastings."],
-    ["4:30 pm","Sunset platter on the lawn at Surfers Point","surfers-point"],
-    ["7:00 pm","Cooking night 3","margaret-river",null,true]
-  ]},
-  { title:"Beach, then back to Perth", route:["Margaret River WA","Meelup Beach","Elizabeth Quay Perth"], day:"Thursday", base:"Perth CBD", stops:[
-    ["9:30 am","Swim or stroll at Meelup Beach","meelup","Calm, shallow water."],
-    ["11:30 am","Drive about three hours north to Perth","perth-cbd"],
-    ["3:00 pm","Check in and wander Elizabeth Quay","perth-cbd"],
-    ["7:30 pm","Last-night dinner in the city","perth-cbd"]
-  ]},
-  { title:"Kings Park and home", route:["Elizabeth Quay Perth","Lotterywest Federation Walkway Kings Park","Perth Airport"], day:"Friday", base:null, stops:[
-    ["10:00 am","Late check-out and a long brunch in the city","perth-cbd"],
-    ["12:30 pm","Treetop walkway in Kings Park","kings-park","Free, with views over the river and city."],
-    ["3:30 pm","Return the car and check in","perth-airport"],
+  { title:"Freo breakfast, markets and home", route:["Duck Duck Bruce Fremantle","Fremantle Markets","South Beach Fremantle","Perth Airport"], day:"Friday", base:null, stops:[
+    ["10:00 am","Slow breakfast at Duck Duck Bruce","duck-duck-bruce"],
+    ["11:00 am","Gift shopping at Fremantle Markets: honey and artisan gifts","freo-markets","Open from 9 am on Fridays, a few minutes' walk from breakfast."],
+    ["12:30 pm","Last walk along South Beach","south-beach"],
+    ["3:30 pm","Drive to the airport, return the car and check in","perth-airport"],
     ["6:30 pm","Fly home to Singapore"]
   ]}
 ];
@@ -219,36 +271,48 @@ const days = [
 const places = {
   "perth-airport":{name:"Perth Airport",lat:-31.9385,lng:115.9672},
   "perth-cbd":{name:"Perth CBD",q:"Elizabeth Quay Perth",lat:-31.9576,lng:115.857},
-  "kings-park":{name:"Kings Park",q:"Lotterywest Federation Walkway Kings Park",lat:-31.9646,lng:115.8394,hide:true},
+  "kings-park":{name:"Kings Park",q:"State War Memorial Kings Park",lat:-31.9608,lng:115.8447},
   "fremantle":{name:"Fremantle",q:"Fremantle WA",lat:-32.056,lng:115.747},
+  "bread-in-common":{name:"Bread in Common",q:"Bread in Common Fremantle",lat:-32.0562,lng:115.7452,hide:true},
+  "duck-duck-bruce":{name:"Duck Duck Bruce",q:"Duck Duck Bruce Fremantle",lat:-32.0564,lng:115.7465,hide:true},
+  "south-beach":{name:"South Beach",q:"South Beach Fremantle",lat:-32.0772,lng:115.7529},
   "little-creatures":{name:"Little Creatures",q:"Little Creatures Brewery Fremantle",lat:-32.0593,lng:115.7444,hide:true},
   "b-shed":{name:"B-Shed ferry",q:"Rottnest Express B Shed Ferry Terminal",lat:-32.0526,lng:115.7431,hide:true},
   "freo-markets":{name:"Fremantle Markets",q:"Fremantle Markets",lat:-32.0563,lng:115.7489,hide:true},
   "rottnest":{name:"Rottnest",q:"Rottnest Island Pedal and Flipper Hire",lat:-31.9984,lng:115.5416},
   "hotel-rottnest":{name:"Hotel Rottnest",q:"Hotel Rottnest",lat:-31.9984,lng:115.5424,hide:true},
   "bunbury":{name:"Bunbury market",q:"Bunbury Farmers Market",lat:-33.3365,lng:115.6804},
-  "busselton":{name:"Busselton Jetty",q:"Busselton Jetty",lat:-33.6445,lng:115.345},
   "meelup":{name:"Meelup Beach",q:"Meelup Beach",lat:-33.5732,lng:115.0871},
+  "injidup":{name:"Injidup Natural Spa",q:"Injidup Natural Spa",lat:-33.6985,lng:114.9905},
+  "swings":{name:"Swings & Roundabouts",q:"Swings & Roundabouts Yallingup",lat:-33.6885,lng:115.0289},
   "vasse-felix":{name:"Vasse Felix",q:"Vasse Felix",lat:-33.8237,lng:115.048},
+  "mr-dairy":{name:"Margaret River Dairy Co.",q:"Margaret River Dairy Company",lat:-33.807,lng:115.1216},
   "margaret-river":{name:"Margaret River",q:"Margaret River WA",lat:-33.9535,lng:115.063},
-  "charcuterie":{name:"Charcuterie",q:"Charcuterie Margaret River",lat:-33.9492,lng:115.0744,hide:true},
+  "mr-bakery":{name:"Margaret River Bakery",q:"Margaret River Bakery",lat:-33.9479,lng:115.0747,hide:true},
+  "34-blue":{name:"34 Degrees Blue",q:"34 Degrees Blue Margaret River",lat:-33.9568,lng:115.0699,hide:true},
   "surfers-point":{name:"Surfers Point",q:"Surfers Point Prevelly",lat:-33.9765,lng:114.9867},
   "lake-cave":{name:"Lake Cave",q:"Lake Cave Margaret River",lat:-34.079,lng:115.0293},
-  "boranup":{name:"Boranup Forest",q:"Boranup Forest",lat:-34.1295,lng:115.0763},
-  "via-busselton":{lat:-33.66,lng:115.4,via:true},
-  "via-bunbury":{lat:-33.33,lng:115.67,via:true}
+  "boranup":{name:"Boranup Forest",q:"Boranup Forest",lat:-34.1295,lng:115.0763}
 };
 
 /* Map: MapLibre + OpenFreeMap tiles (free, no key), road routes from the public OSRM router */
 const paths=[
-  ["perth-airport","fremantle","little-creatures"],
-  ["b-shed","rottnest","hotel-rottnest","b-shed","freo-markets","fremantle"],
-  ["fremantle","bunbury","busselton","margaret-river"],
-  ["margaret-river","boranup","lake-cave","margaret-river"],
-  ["margaret-river","vasse-felix","charcuterie","surfers-point","margaret-river"],
-  ["margaret-river","meelup","perth-cbd"],
-  ["perth-cbd","kings-park","perth-airport"]
+  ["perth-airport","margaret-river"],
+  ["margaret-river","injidup","swings","margaret-river","surfers-point","margaret-river"],
+  ["margaret-river","boranup","lake-cave","mr-bakery","34-blue","margaret-river"],
+  ["margaret-river","vasse-felix","mr-dairy","meelup","margaret-river"],
+  ["margaret-river","bunbury","kings-park","perth-cbd","fremantle","bread-in-common"],
+  ["b-shed","rottnest","hotel-rottnest","b-shed","little-creatures"],
+  ["duck-duck-bruce","freo-markets","south-beach","perth-airport"]
 ];
+/* Road routes fetched once from OSRM and stored here, so the map doesn't depend on the public router */
+const ROUTES={"perth-airport>margaret-river":[[115.9612,-31.9369],[115.9596,-31.9378],[115.9593,-31.9379],[115.9592,-31.9378],[115.959,-31.9381],[115.9583,-31.9385],[115.9577,-31.9386],[115.9567,-31.9391],[115.9564,-31.9393],[115.9564,-31.9405],[115.9558,-31.9415],[115.9542,-31.9421],[115.954,-31.9421],[115.9538,-31.9422],[115.9535,-31.9421],[115.9532,-31.9421],[115.9521,-31.9434],[115.9519,-31.9439],[115.9519,-31.9446],[115.9525,-31.9459],[115.9543,-31.9485],[115.9548,-31.9495],[115.9552,-31.9508],[115.9554,-31.9517],[115.9553,-31.9535],[115.9538,-31.9586],[115.9534,-31.961],[115.9536,-31.9633],[115.954,-31.9647],[115.9544,-31.9658],[115.9553,-31.9671],[115.9562,-31.9683],[115.9573,-31.9693],[115.9585,-31.9702],[115.9601,-31.9712],[115.975,-31.9783],[115.9782,-31.98],[115.9805,-31.9818],[115.9832,-31.9843],[115.9842,-31.9848],[115.9858,-31.9853],[115.9866,-31.9857],[115.9872,-31.9864],[115.9875,-31.9872],[115.9874,-31.9883],[115.9868,-31.9892],[115.986,-31.9897],[115.9841,-31.9904],[115.9825,-31.9916],[115.9778,-31.9977],[115.9759,-32.0003],[115.975,-32.0018],[115.9742,-32.0037],[115.9735,-32.0055],[115.9728,-32.0077],[115.9721,-32.0125],[115.972,-32.017],[115.9722,-32.0226],[115.9721,-32.0238],[115.9715,-32.0257],[115.9705,-32.0276],[115.9698,-32.0286],[115.9671,-32.0311],[115.9637,-32.034],[115.9601,-32.0369],[115.9563,-32.0395],[115.941,-32.0493],[115.9375,-32.0514],[115.936,-32.0521],[115.9319,-32.0537],[115.9275,-32.0546],[115.9244,-32.055],[115.9222,-32.0551],[115.911,-32.0548],[115.9092,-32.0551],[115.9076,-32.0556],[115.9055,-32.0569],[115.8924,-32.0671],[115.8896,-32.0697],[115.8852,-32.0742],[115.88,-32.0792],[115.8766,-32.0816],[115.8732,-32.0833],[115.8703,-32.0844],[115.8597,-32.0876],[115.8573,-32.0879],[115.8528,-32.0878],[115.8517,-32.088],[115.851,-32.0884],[115.8503,-32.0889],[115.8499,-32.0895],[115.8496,-32.0901],[115.8494,-32.0923],[115.8495,-32.0959],[115.8502,-32.1017],[115.8514,-32.1071],[115.8526,-32.1112],[115.8546,-32.1166],[115.8558,-32.1196],[115.8588,-32.1258],[115.8592,-32.1269],[115.8599,-32.1295],[115.8601,-32.1331],[115.8601,-32.147],[115.8597,-32.1497],[115.8569,-32.1591],[115.8566,-32.1613],[115.8575,-32.187],[115.8574,-32.1902],[115.8572,-32.1917],[115.8565,-32.1954],[115.8552,-32.1993],[115.8508,-32.2093],[115.8495,-32.2127],[115.8488,-32.2158],[115.8486,-32.2181],[115.8485,-32.2197],[115.8488,-32.222],[115.8527,-32.2466],[115.8532,-32.2556],[115.8533,-32.2589],[115.8532,-32.2608],[115.8527,-32.2628],[115.8515,-32.265],[115.8506,-32.2662],[115.842,-32.2754],[115.8409,-32.277],[115.8404,-32.278],[115.8316,-32.3095],[115.8273,-32.3209],[115.8269,-32.3222],[115.8268,-32.3235],[115.8268,-32.3251],[115.827,-32.3261],[115.8274,-32.3275],[115.8282,-32.3291],[115.8287,-32.3299],[115.8332,-32.3362],[115.8339,-32.3376],[115.8345,-32.3394],[115.8346,-32.3412],[115.8346,-32.3624],[115.8344,-32.3651],[115.8339,-32.3678],[115.829,-32.3824],[115.8284,-32.3855],[115.8275,-32.3933],[115.8266,-32.3971],[115.8258,-32.3993],[115.8246,-32.402],[115.8225,-32.4055],[115.8203,-32.4085],[115.8135,-32.4162],[115.8122,-32.4179],[115.811,-32.4202],[115.8103,-32.4219],[115.8072,-32.4335],[115.8044,-32.4467],[115.8041,-32.4477],[115.8035,-32.449],[115.8019,-32.4511],[115.7986,-32.4542],[115.7966,-32.4563],[115.7895,-32.4653],[115.785,-32.4719],[115.7844,-32.4735],[115.7841,-32.4752],[115.7841,-32.4769],[115.785,-32.483],[115.7851,-32.4847],[115.785,-32.4862],[115.7838,-32.4936],[115.7838,-32.4959],[115.7842,-32.4978],[115.7845,-32.4987],[115.7855,-32.5006],[115.7865,-32.5021],[115.7877,-32.5034],[115.7919,-32.507],[115.7935,-32.5082],[115.7952,-32.5092],[115.8076,-32.5152],[115.81,-32.5168],[115.8122,-32.5188],[115.8136,-32.5205],[115.8147,-32.5225],[115.8153,-32.5242],[115.8157,-32.5257],[115.8159,-32.5274],[115.8159,-32.5292],[115.8145,-32.5424],[115.8147,-32.5687],[115.8146,-32.5757],[115.8148,-32.5798],[115.8146,-32.5963],[115.8147,-32.624],[115.8147,-32.6262],[115.8141,-32.6302],[115.8134,-32.633],[115.8125,-32.6353],[115.8113,-32.6378],[115.8102,-32.6395],[115.8087,-32.6416],[115.7977,-32.6556],[115.7746,-32.6895],[115.7647,-32.7037],[115.7575,-32.7144],[115.7545,-32.7187],[115.7529,-32.7214],[115.7515,-32.7243],[115.7507,-32.7265],[115.7501,-32.7288],[115.7496,-32.731],[115.7493,-32.7337],[115.7492,-32.7391],[115.7493,-32.7423],[115.7493,-32.7671],[115.7491,-32.7695],[115.7487,-32.7722],[115.7455,-32.7888],[115.7452,-32.7922],[115.7453,-32.8069],[115.7452,-32.8081],[115.7447,-32.8105],[115.7442,-32.8118],[115.7432,-32.8139],[115.7419,-32.816],[115.7405,-32.8176],[115.7386,-32.8193],[115.7366,-32.8207],[115.7309,-32.8242],[115.7291,-32.8255],[115.7267,-32.8278],[115.7251,-32.8304],[115.7245,-32.8318],[115.7239,-32.8343],[115.7238,-32.8372],[115.724,-32.8385],[115.7252,-32.8421],[115.7288,-32.8516],[115.7293,-32.8538],[115.7296,-32.8558],[115.7296,-32.8574],[115.7292,-32.8608],[115.7284,-32.8636],[115.7259,-32.8684],[115.7181,-32.8773],[115.7153,-32.8808],[115.7142,-32.8825],[115.7132,-32.885],[115.7125,-32.8883],[115.7126,-32.8905],[115.7128,-32.8922],[115.7144,-32.8972],[115.7154,-32.9015],[115.7203,-32.9246],[115.7205,-32.9255],[115.7206,-32.9329],[115.725,-32.954],[115.7262,-32.9624],[115.7312,-32.9865],[115.7316,-32.9949],[115.7317,-32.9961],[115.7352,-33.0081],[115.7355,-33.0105],[115.7346,-33.0265],[115.7311,-33.05],[115.7311,-33.0536],[115.7309,-33.0545],[115.7305,-33.056],[115.7289,-33.0589],[115.7285,-33.0601],[115.7283,-33.0612],[115.7282,-33.0975],[115.728,-33.0982],[115.7274,-33.0993],[115.7244,-33.1027],[115.7236,-33.1042],[115.7219,-33.1142],[115.7205,-33.1476],[115.72,-33.1622],[115.7197,-33.1647],[115.7176,-33.1733],[115.717,-33.1784],[115.717,-33.1824],[115.7173,-33.203],[115.7174,-33.2043],[115.718,-33.2062],[115.727,-33.2243],[115.7276,-33.2262],[115.7283,-33.2301],[115.7288,-33.2314],[115.7296,-33.2326],[115.7305,-33.2338],[115.7315,-33.2348],[115.7427,-33.2432],[115.7446,-33.245],[115.7457,-33.2467],[115.7465,-33.2481],[115.7472,-33.2497],[115.7533,-33.2672],[115.7546,-33.2694],[115.7553,-33.2704],[115.7571,-33.2721],[115.7598,-33.2739],[115.7649,-33.2762],[115.7663,-33.2774],[115.7672,-33.2783],[115.768,-33.2795],[115.7686,-33.2816],[115.7686,-33.2883],[115.7687,-33.2902],[115.7699,-33.2977],[115.7705,-33.3036],[115.7712,-33.3067],[115.7729,-33.3117],[115.7735,-33.315],[115.7737,-33.3174],[115.7736,-33.3345],[115.7732,-33.3371],[115.7724,-33.3394],[115.7718,-33.3406],[115.7702,-33.3432],[115.7687,-33.3449],[115.7671,-33.3464],[115.7624,-33.3497],[115.7564,-33.3534],[115.7533,-33.3551],[115.7464,-33.3581],[115.7227,-33.3661],[115.7191,-33.3677],[115.7163,-33.3696],[115.714,-33.3719],[115.7122,-33.3732],[115.7049,-33.3768],[115.703,-33.3772],[115.7024,-33.3777],[115.6942,-33.3826],[115.6887,-33.3856],[115.6876,-33.3865],[115.6866,-33.3871],[115.6862,-33.3875],[115.6724,-33.3906],[115.6705,-33.3914],[115.6688,-33.3923],[115.6673,-33.3933],[115.666,-33.3944],[115.6652,-33.3954],[115.6644,-33.3964],[115.6637,-33.3978],[115.6636,-33.3988],[115.6616,-33.4007],[115.6605,-33.4022],[115.66,-33.4034],[115.6595,-33.405],[115.6594,-33.4101],[115.6592,-33.4115],[115.6586,-33.4135],[115.6577,-33.4154],[115.6566,-33.417],[115.6556,-33.418],[115.6544,-33.4191],[115.6526,-33.4204],[115.651,-33.4212],[115.6393,-33.4266],[115.6344,-33.4283],[115.6258,-33.4305],[115.6239,-33.4311],[115.6186,-33.4343],[115.6169,-33.4355],[115.6157,-33.4372],[115.6145,-33.4394],[115.6123,-33.4431],[115.6103,-33.4458],[115.6078,-33.4496],[115.6048,-33.4545],[115.5983,-33.4635],[115.5937,-33.4714],[115.5876,-33.4802],[115.5825,-33.4913],[115.5796,-33.4968],[115.5787,-33.499],[115.5765,-33.506],[115.5729,-33.5165],[115.5726,-33.5186],[115.5726,-33.5228],[115.5724,-33.5245],[115.5714,-33.5284],[115.5705,-33.53],[115.5658,-33.5347],[115.5646,-33.5361],[115.564,-33.5371],[115.5617,-33.5426],[115.5608,-33.5441],[115.5502,-33.5553],[115.5486,-33.5566],[115.5407,-33.5613],[115.5269,-33.5736],[115.5261,-33.5748],[115.5253,-33.5764],[115.5243,-33.5825],[115.5239,-33.5837],[115.5229,-33.5856],[115.5146,-33.5995],[115.5129,-33.6014],[115.5091,-33.6039],[115.4953,-33.6123],[115.4935,-33.6132],[115.4919,-33.6137],[115.491,-33.6139],[115.4847,-33.6144],[115.4837,-33.6146],[115.4815,-33.6153],[115.4803,-33.6159],[115.4784,-33.6173],[115.4756,-33.6204],[115.4732,-33.6227],[115.4595,-33.6334],[115.455,-33.6367],[115.4514,-33.6392],[115.4388,-33.6464],[115.4368,-33.6472],[115.4294,-33.6496],[115.4271,-33.6506],[115.4236,-33.653],[115.4222,-33.6541],[115.4211,-33.6548],[115.4209,-33.6554],[115.4207,-33.6556],[115.4194,-33.6556],[115.4169,-33.6563],[115.4153,-33.6564],[115.4117,-33.6567],[115.409,-33.6567],[115.4076,-33.6565],[115.4036,-33.6556],[115.4006,-33.6555],[115.3706,-33.6612],[115.3599,-33.6634],[115.3589,-33.6641],[115.3572,-33.6644],[115.3554,-33.6652],[115.3516,-33.6675],[115.3508,-33.6681],[115.3502,-33.669],[115.3496,-33.6691],[115.3464,-33.6705],[115.343,-33.6711],[115.3282,-33.6712],[115.318,-33.671],[115.3168,-33.6708],[115.316,-33.6711],[115.3137,-33.6708],[115.3031,-33.6707],[115.3017,-33.6709],[115.2998,-33.6713],[115.2914,-33.6747],[115.2887,-33.6754],[115.287,-33.6756],[115.2707,-33.6763],[115.2686,-33.6764],[115.2617,-33.6758],[115.2564,-33.6757],[115.2548,-33.6754],[115.2529,-33.6744],[115.2517,-33.6752],[115.2514,-33.6757],[115.2509,-33.676],[115.2493,-33.6771],[115.2408,-33.6808],[115.2365,-33.6832],[115.2325,-33.6845],[115.2301,-33.6848],[115.23,-33.6865],[115.2297,-33.6874],[115.2292,-33.6883],[115.2261,-33.6923],[115.2247,-33.6934],[115.2233,-33.6941],[115.2217,-33.6945],[115.2168,-33.6951],[115.2119,-33.6962],[115.2105,-33.6963],[115.2087,-33.6963],[115.205,-33.6957],[115.2013,-33.6953],[115.1995,-33.6953],[115.1975,-33.6957],[115.1932,-33.6969],[115.1914,-33.6975],[115.1901,-33.6984],[115.1895,-33.6988],[115.1887,-33.6999],[115.1878,-33.7024],[115.1872,-33.7033],[115.1844,-33.7066],[115.1826,-33.7081],[115.1756,-33.7122],[115.1745,-33.7131],[115.1719,-33.716],[115.1672,-33.7218],[115.1661,-33.7235],[115.1577,-33.7464],[115.1559,-33.7511],[115.1555,-33.7518],[115.1518,-33.7568],[115.1387,-33.769],[115.1377,-33.7705],[115.1362,-33.7741],[115.1358,-33.7748],[115.1324,-33.7786],[115.1319,-33.7794],[115.1041,-33.8494],[115.1037,-33.8501],[115.1012,-33.8526],[115.1009,-33.853],[115.0885,-33.8807],[115.0852,-33.901],[115.0852,-33.9019],[115.0855,-33.908],[115.0854,-33.9091],[115.0818,-33.9176],[115.0815,-33.9191],[115.0803,-33.9282],[115.0803,-33.9295],[115.0805,-33.9302],[115.0812,-33.9318],[115.0813,-33.9331],[115.0816,-33.9334],[115.0819,-33.9335],[115.0819,-33.9337],[115.0797,-33.9368],[115.0773,-33.9392],[115.0744,-33.9427],[115.0737,-33.9449],[115.0737,-33.9454],[115.0743,-33.9466],[115.0744,-33.9475],[115.0743,-33.9483],[115.0744,-33.9485],[115.0734,-33.9529],[115.0736,-33.9538],[115.0721,-33.9535],[115.063,-33.9535]],
+"margaret-river>injidup>swings>margaret-river>surfers-point>margaret-river":[[115.063,-33.9535],[115.0721,-33.9535],[115.0734,-33.9537],[115.0734,-33.9528],[115.0741,-33.9498],[115.0741,-33.9486],[115.0743,-33.9483],[115.0744,-33.9475],[115.0743,-33.9466],[115.0737,-33.9454],[115.0737,-33.9449],[115.0744,-33.9427],[115.0722,-33.9415],[115.0716,-33.9409],[115.0705,-33.9384],[115.0696,-33.937],[115.069,-33.9352],[115.0685,-33.9345],[115.0671,-33.9334],[115.0656,-33.9326],[115.0644,-33.9316],[115.0621,-33.9283],[115.0611,-33.9271],[115.0606,-33.9266],[115.0585,-33.9252],[115.0534,-33.9229],[115.0511,-33.9226],[115.0501,-33.9223],[115.045,-33.9195],[115.0434,-33.9181],[115.0428,-33.9178],[115.042,-33.9176],[115.0398,-33.9175],[115.0379,-33.9168],[115.0327,-33.9161],[115.0308,-33.9154],[115.0265,-33.9131],[115.0287,-33.9106],[115.0297,-33.9094],[115.03,-33.9088],[115.0303,-33.9074],[115.0306,-33.907],[115.0315,-33.9064],[115.032,-33.9059],[115.0323,-33.9053],[115.0323,-33.9046],[115.032,-33.904],[115.031,-33.9027],[115.0299,-33.901],[115.0284,-33.8981],[115.0279,-33.8966],[115.0269,-33.8947],[115.0231,-33.8886],[115.0212,-33.8834],[115.0204,-33.8809],[115.0196,-33.8789],[115.0186,-33.8749],[115.0185,-33.8734],[115.0179,-33.8709],[115.0179,-33.8698],[115.0182,-33.8677],[115.0175,-33.8645],[115.0176,-33.8641],[115.019,-33.86],[115.0194,-33.8593],[115.0217,-33.8573],[115.0245,-33.8555],[115.0262,-33.8541],[115.0267,-33.8534],[115.0278,-33.8507],[115.0277,-33.8485],[115.0273,-33.847],[115.0272,-33.8461],[115.0274,-33.8451],[115.0277,-33.8444],[115.0285,-33.8433],[115.032,-33.8413],[115.0331,-33.8404],[115.0335,-33.8397],[115.0348,-33.8366],[115.036,-33.8347],[115.0375,-33.8329],[115.0382,-33.8319],[115.0385,-33.831],[115.0385,-33.8286],[115.0368,-33.82],[115.0367,-33.8154],[115.0353,-33.8123],[115.0338,-33.8097],[115.0318,-33.8052],[115.0307,-33.8033],[115.0296,-33.7989],[115.0296,-33.7981],[115.0299,-33.7967],[115.032,-33.7933],[115.0327,-33.7913],[115.0335,-33.7853],[115.0336,-33.7785],[115.0346,-33.7752],[115.0337,-33.7671],[115.0315,-33.7623],[115.031,-33.7611],[115.0302,-33.7582],[115.029,-33.7526],[115.029,-33.7504],[115.03,-33.7457],[115.033,-33.737],[115.0333,-33.7365],[115.0354,-33.7348],[115.036,-33.7341],[115.0382,-33.7283],[115.0383,-33.7271],[115.0378,-33.7259],[115.0371,-33.7251],[115.0349,-33.7231],[115.0324,-33.7213],[115.0315,-33.7203],[115.0307,-33.7172],[115.0294,-33.7143],[115.0293,-33.7139],[115.0293,-33.7121],[115.0284,-33.7087],[115.0279,-33.7053],[115.0283,-33.7014],[115.0291,-33.6985],[115.0291,-33.6979],[115.0286,-33.6936],[115.0165,-33.6936],[115.0164,-33.6983],[115.0161,-33.6987],[114.9947,-33.6986],[114.9949,-33.6977],[114.9956,-33.6967],[114.9955,-33.6965],[114.9948,-33.6957],[114.9942,-33.6965],[114.994,-33.6967],[114.9918,-33.6976],[114.9889,-33.6995],[114.9918,-33.6976],[114.994,-33.6967],[114.9942,-33.6965],[114.9948,-33.6957],[114.9955,-33.6965],[114.9956,-33.6967],[114.9949,-33.6977],[114.9947,-33.6986],[115.0161,-33.6987],[115.0164,-33.6983],[115.0165,-33.6936],[115.0286,-33.6936],[115.0284,-33.6923],[115.0281,-33.6895],[115.0284,-33.6895],[115.0288,-33.69],[115.0291,-33.6898],[115.0292,-33.6888],[115.0287,-33.6886],[115.0285,-33.6887],[115.0284,-33.6894],[115.0281,-33.6895],[115.0284,-33.6923],[115.0289,-33.695],[115.0291,-33.6979],[115.0291,-33.6985],[115.0283,-33.7014],[115.0279,-33.7053],[115.0284,-33.7087],[115.0293,-33.7121],[115.0293,-33.7139],[115.0294,-33.7143],[115.0307,-33.7172],[115.0315,-33.7203],[115.0324,-33.7213],[115.0349,-33.7231],[115.0371,-33.7251],[115.0378,-33.7259],[115.0383,-33.7271],[115.0382,-33.7283],[115.036,-33.7341],[115.0354,-33.7348],[115.0333,-33.7365],[115.033,-33.737],[115.03,-33.7457],[115.029,-33.7504],[115.029,-33.7526],[115.0302,-33.7582],[115.031,-33.7611],[115.0315,-33.7623],[115.0337,-33.7671],[115.0346,-33.7752],[115.0336,-33.7785],[115.0335,-33.7853],[115.0327,-33.7913],[115.032,-33.7933],[115.0299,-33.7967],[115.0296,-33.7981],[115.0296,-33.7989],[115.0307,-33.8033],[115.0318,-33.8052],[115.0338,-33.8097],[115.0353,-33.8123],[115.0367,-33.8154],[115.0368,-33.82],[115.0385,-33.8286],[115.0385,-33.831],[115.0382,-33.8319],[115.0375,-33.8329],[115.036,-33.8347],[115.0348,-33.8366],[115.0335,-33.8397],[115.0331,-33.8404],[115.032,-33.8413],[115.0285,-33.8433],[115.0277,-33.8444],[115.0274,-33.8451],[115.0272,-33.8461],[115.0273,-33.847],[115.0277,-33.8485],[115.0278,-33.8507],[115.0267,-33.8534],[115.0262,-33.8541],[115.0245,-33.8555],[115.0217,-33.8573],[115.0194,-33.8593],[115.019,-33.86],[115.0176,-33.8641],[115.0175,-33.8645],[115.0182,-33.8677],[115.0179,-33.8698],[115.0179,-33.8709],[115.0185,-33.8734],[115.0186,-33.8749],[115.0196,-33.8789],[115.0204,-33.8809],[115.0212,-33.8834],[115.0231,-33.8886],[115.0269,-33.8947],[115.0279,-33.8966],[115.0284,-33.8981],[115.0299,-33.901],[115.031,-33.9027],[115.032,-33.904],[115.0323,-33.9046],[115.0323,-33.9053],[115.032,-33.9059],[115.0315,-33.9064],[115.0306,-33.907],[115.0303,-33.9074],[115.03,-33.9088],[115.0297,-33.9094],[115.0287,-33.9106],[115.0265,-33.9131],[115.0308,-33.9154],[115.0327,-33.9161],[115.0379,-33.9168],[115.0398,-33.9175],[115.042,-33.9176],[115.0428,-33.9178],[115.0434,-33.9181],[115.045,-33.9195],[115.0501,-33.9223],[115.0511,-33.9226],[115.0528,-33.9227],[115.0537,-33.923],[115.0579,-33.9249],[115.0606,-33.9266],[115.0621,-33.9283],[115.0644,-33.9316],[115.0656,-33.9326],[115.0671,-33.9334],[115.0685,-33.9345],[115.069,-33.9352],[115.0696,-33.937],[115.0705,-33.9384],[115.0716,-33.9409],[115.0722,-33.9415],[115.0744,-33.9427],[115.0737,-33.9449],[115.0737,-33.9454],[115.0743,-33.9466],[115.0744,-33.9475],[115.0743,-33.9483],[115.0744,-33.9485],[115.0734,-33.9529],[115.0737,-33.9537],[115.0735,-33.9538],[115.0721,-33.9535],[115.0628,-33.9536],[115.0608,-33.9533],[115.0598,-33.9535],[115.055,-33.9551],[115.0471,-33.9569],[115.0364,-33.9599],[115.0288,-33.9614],[115.0255,-33.9623],[115.0232,-33.9634],[115.02,-33.9655],[115.0202,-33.966],[115.0175,-33.9669],[115.0156,-33.9678],[115.0141,-33.9679],[115.0106,-33.9671],[115.0096,-33.9671],[115.0056,-33.9672],[115.0032,-33.9675],[115.0027,-33.9677],[115.0022,-33.9681],[114.9993,-33.9717],[114.9988,-33.9721],[114.9967,-33.973],[114.996,-33.9734],[114.9954,-33.9742],[114.9953,-33.9747],[114.9953,-33.9757],[114.9948,-33.9758],[114.9939,-33.9765],[114.9931,-33.9767],[114.9911,-33.9766],[114.9892,-33.9769],[114.988,-33.977],[114.9868,-33.977],[114.9864,-33.9766],[114.9864,-33.9763],[114.9867,-33.9756],[114.9869,-33.9748],[114.9871,-33.9746],[114.9893,-33.9769],[114.9911,-33.9766],[114.9933,-33.9767],[114.9939,-33.9765],[114.9952,-33.9756],[114.9953,-33.9747],[114.9954,-33.9742],[114.996,-33.9734],[114.9967,-33.973],[114.9988,-33.9721],[114.9993,-33.9717],[115.0022,-33.9681],[115.0027,-33.9677],[115.0032,-33.9675],[115.0056,-33.9672],[115.0096,-33.9671],[115.0106,-33.9671],[115.0141,-33.9679],[115.0156,-33.9678],[115.0175,-33.9669],[115.0202,-33.966],[115.02,-33.9655],[115.0223,-33.964],[115.0249,-33.9626],[115.027,-33.9619],[115.0297,-33.9612],[115.0364,-33.9599],[115.0469,-33.9569],[115.055,-33.9551],[115.0598,-33.9535],[115.0608,-33.9533],[115.0624,-33.9535],[115.0628,-33.9534],[115.063,-33.9535]],
+"margaret-river>boranup>lake-cave>mr-bakery>34-blue>margaret-river":[[115.063,-33.9535],[115.0628,-33.9536],[115.0608,-33.9533],[115.0598,-33.9535],[115.055,-33.9551],[115.0469,-33.9569],[115.0364,-33.9599],[115.0297,-33.9612],[115.027,-33.9619],[115.0255,-33.9623],[115.0242,-33.9629],[115.02,-33.9655],[115.0205,-33.9667],[115.0208,-33.9671],[115.0216,-33.9678],[115.0254,-33.9696],[115.0308,-33.9726],[115.032,-33.9737],[115.0325,-33.9749],[115.033,-33.9783],[115.034,-33.9829],[115.0337,-33.9846],[115.0331,-33.9858],[115.032,-33.9868],[115.0295,-33.9881],[115.0286,-33.9888],[115.0281,-33.9896],[115.0278,-33.9907],[115.0278,-33.9928],[115.0283,-33.995],[115.0284,-33.9982],[115.0288,-33.9993],[115.0307,-34.0032],[115.0311,-34.0046],[115.0308,-34.0062],[115.0305,-34.0069],[115.0289,-34.0092],[115.0287,-34.0099],[115.0286,-34.0108],[115.0289,-34.0117],[115.0293,-34.0124],[115.0308,-34.0139],[115.0314,-34.0148],[115.0318,-34.0163],[115.0321,-34.018],[115.032,-34.0192],[115.0317,-34.0199],[115.031,-34.0211],[115.0288,-34.0235],[115.0283,-34.0244],[115.0281,-34.0259],[115.0283,-34.0272],[115.0305,-34.0338],[115.0315,-34.0352],[115.0316,-34.0359],[115.0313,-34.0365],[115.0298,-34.0383],[115.0294,-34.0389],[115.0286,-34.0406],[115.028,-34.0421],[115.026,-34.0459],[115.0254,-34.0477],[115.0243,-34.0495],[115.0242,-34.0502],[115.0271,-34.056],[115.0281,-34.0592],[115.0286,-34.0601],[115.0293,-34.0605],[115.03,-34.0606],[115.033,-34.0602],[115.0338,-34.0605],[115.0344,-34.0612],[115.0349,-34.0648],[115.0355,-34.0674],[115.0354,-34.0682],[115.0341,-34.074],[115.033,-34.0752],[115.0319,-34.0767],[115.0308,-34.0774],[115.0305,-34.0778],[115.0304,-34.0784],[115.0304,-34.0787],[115.031,-34.0795],[115.0315,-34.0799],[115.036,-34.0818],[115.0367,-34.0823],[115.0394,-34.0859],[115.0407,-34.0869],[115.0416,-34.0888],[115.0429,-34.0903],[115.0447,-34.093],[115.0448,-34.0934],[115.0451,-34.0957],[115.0454,-34.0966],[115.0457,-34.0968],[115.0464,-34.0971],[115.0479,-34.0968],[115.0491,-34.0969],[115.0513,-34.0983],[115.0533,-34.0988],[115.0547,-34.0988],[115.0575,-34.0985],[115.0591,-34.0987],[115.0616,-34.0986],[115.0629,-34.0988],[115.0645,-34.1001],[115.0691,-34.104],[115.0718,-34.1072],[115.075,-34.1114],[115.0762,-34.1139],[115.0768,-34.1157],[115.0777,-34.1188],[115.0794,-34.1223],[115.0795,-34.1229],[115.0791,-34.1244],[115.0793,-34.1253],[115.0804,-34.1272],[115.0811,-34.1292],[115.0826,-34.1313],[115.0852,-34.1341],[115.0857,-34.1352],[115.0857,-34.1357],[115.0856,-34.1366],[115.0827,-34.1426],[115.0815,-34.1452],[115.0814,-34.1457],[115.0814,-34.1465],[115.0824,-34.1511],[115.0826,-34.1529],[115.0827,-34.1582],[115.0814,-34.1576],[115.0827,-34.1582],[115.0826,-34.1529],[115.0824,-34.1511],[115.0814,-34.1465],[115.0814,-34.1457],[115.0815,-34.1452],[115.0827,-34.1426],[115.0856,-34.1366],[115.0857,-34.1357],[115.0857,-34.1352],[115.0852,-34.1341],[115.0826,-34.1313],[115.0811,-34.1292],[115.0804,-34.1272],[115.0793,-34.1253],[115.0791,-34.1244],[115.0795,-34.1229],[115.0794,-34.1223],[115.0777,-34.1188],[115.0768,-34.1157],[115.0762,-34.1139],[115.075,-34.1114],[115.0718,-34.1072],[115.0691,-34.104],[115.0645,-34.1001],[115.0629,-34.0988],[115.0616,-34.0986],[115.0591,-34.0987],[115.0575,-34.0985],[115.0547,-34.0988],[115.0533,-34.0988],[115.0513,-34.0983],[115.0491,-34.0969],[115.0479,-34.0968],[115.0464,-34.0971],[115.0457,-34.0968],[115.0454,-34.0966],[115.0451,-34.0957],[115.0448,-34.0934],[115.0447,-34.093],[115.0429,-34.0903],[115.0416,-34.0888],[115.0407,-34.0869],[115.0394,-34.0859],[115.0367,-34.0823],[115.036,-34.0818],[115.0338,-34.0809],[115.0336,-34.0811],[115.0333,-34.0811],[115.0323,-34.0805],[115.0312,-34.0804],[115.0298,-34.0805],[115.029,-34.08],[115.0288,-34.0793],[115.0289,-34.0792],[115.0292,-34.0793],[115.0293,-34.0796],[115.029,-34.0799],[115.029,-34.08],[115.0298,-34.0805],[115.0312,-34.0804],[115.0323,-34.0805],[115.0333,-34.0811],[115.0336,-34.0811],[115.0338,-34.0809],[115.0312,-34.0797],[115.0304,-34.0787],[115.0304,-34.0781],[115.0306,-34.0776],[115.0319,-34.0767],[115.033,-34.0752],[115.0341,-34.074],[115.0354,-34.0682],[115.0355,-34.0674],[115.0349,-34.0648],[115.0344,-34.0612],[115.0342,-34.0608],[115.0338,-34.0605],[115.033,-34.0602],[115.03,-34.0606],[115.0293,-34.0605],[115.0286,-34.0601],[115.0281,-34.0592],[115.0271,-34.056],[115.0242,-34.0502],[115.0243,-34.0495],[115.0254,-34.0477],[115.026,-34.0459],[115.028,-34.0421],[115.0286,-34.0406],[115.0294,-34.0389],[115.0298,-34.0383],[115.0313,-34.0365],[115.0316,-34.0359],[115.0315,-34.0352],[115.0305,-34.0338],[115.0289,-34.0289],[115.0283,-34.0272],[115.0281,-34.0254],[115.0283,-34.0244],[115.0288,-34.0235],[115.0315,-34.0204],[115.032,-34.0192],[115.0321,-34.018],[115.0318,-34.0163],[115.0314,-34.0148],[115.0308,-34.0139],[115.0293,-34.0124],[115.0287,-34.0113],[115.0302,-34.0109],[115.0308,-34.0107],[115.0326,-34.0085],[115.034,-34.0081],[115.0356,-34.0078],[115.0362,-34.0073],[115.0368,-34.0065],[115.0373,-34.0043],[115.0378,-34.0035],[115.0395,-34.0017],[115.0435,-33.9984],[115.0452,-33.9964],[115.0469,-33.9946],[115.0485,-33.9926],[115.0493,-33.991],[115.0538,-33.9853],[115.0555,-33.9835],[115.0638,-33.9763],[115.0647,-33.9746],[115.0655,-33.9728],[115.0661,-33.9697],[115.0673,-33.9666],[115.0677,-33.966],[115.0717,-33.963],[115.073,-33.9626],[115.0761,-33.9613],[115.0765,-33.961],[115.0764,-33.9606],[115.0749,-33.9581],[115.0746,-33.9572],[115.0737,-33.9542],[115.0734,-33.9537],[115.0734,-33.9528],[115.0741,-33.9498],[115.0741,-33.9486],[115.0743,-33.9483],[115.0744,-33.9478],[115.0746,-33.9478],[115.0744,-33.9478],[115.0743,-33.9483],[115.0744,-33.9485],[115.0734,-33.9529],[115.0737,-33.9538],[115.0717,-33.9535],[115.0717,-33.9538],[115.0701,-33.9563],[115.0698,-33.9572],[115.0693,-33.9572],[115.0693,-33.957],[115.0699,-33.957],[115.0701,-33.9563],[115.0717,-33.9538],[115.0717,-33.9535],[115.063,-33.9535]],
+"margaret-river>vasse-felix>mr-dairy>meelup>margaret-river":[[115.063,-33.9535],[115.0721,-33.9535],[115.0729,-33.9537],[115.0734,-33.9536],[115.0734,-33.9528],[115.0741,-33.9498],[115.0741,-33.9486],[115.0743,-33.9483],[115.0744,-33.9475],[115.0743,-33.9466],[115.0737,-33.9454],[115.0737,-33.9449],[115.0744,-33.9427],[115.0722,-33.9415],[115.0716,-33.9409],[115.0705,-33.9384],[115.0696,-33.937],[115.069,-33.9352],[115.0685,-33.9345],[115.0671,-33.9334],[115.0656,-33.9326],[115.0644,-33.9316],[115.0621,-33.9283],[115.0611,-33.9271],[115.0606,-33.9266],[115.0579,-33.9249],[115.0534,-33.9229],[115.0511,-33.9226],[115.0501,-33.9223],[115.045,-33.9195],[115.0434,-33.9181],[115.0428,-33.9178],[115.042,-33.9176],[115.0398,-33.9175],[115.0379,-33.9168],[115.0327,-33.9161],[115.0308,-33.9154],[115.0265,-33.9131],[115.0287,-33.9106],[115.0297,-33.9094],[115.03,-33.9088],[115.0303,-33.9074],[115.0306,-33.907],[115.0315,-33.9064],[115.032,-33.9059],[115.0323,-33.9053],[115.0323,-33.9046],[115.032,-33.904],[115.031,-33.9027],[115.0299,-33.901],[115.0284,-33.8981],[115.0279,-33.8966],[115.0269,-33.8947],[115.0231,-33.8886],[115.0212,-33.8834],[115.0204,-33.8809],[115.0196,-33.8789],[115.0186,-33.8749],[115.0185,-33.8734],[115.0179,-33.8709],[115.0179,-33.8698],[115.0182,-33.8677],[115.0175,-33.8645],[115.0176,-33.8638],[115.019,-33.86],[115.0194,-33.8593],[115.0217,-33.8573],[115.0245,-33.8555],[115.0262,-33.8541],[115.0267,-33.8534],[115.0278,-33.8507],[115.0277,-33.8485],[115.0273,-33.847],[115.0272,-33.8461],[115.0274,-33.8451],[115.0277,-33.8444],[115.0285,-33.8433],[115.032,-33.8413],[115.0331,-33.8404],[115.0335,-33.8397],[115.0348,-33.8366],[115.036,-33.8347],[115.0375,-33.8329],[115.0382,-33.8319],[115.0385,-33.831],[115.0386,-33.829],[115.0377,-33.8247],[115.0458,-33.8246],[115.052,-33.8228],[115.0528,-33.8224],[115.0549,-33.8197],[115.062,-33.8133],[115.0639,-33.8101],[115.0659,-33.8092],[115.0664,-33.8088],[115.0711,-33.8038],[115.0743,-33.8014],[115.0759,-33.7989],[115.1132,-33.803],[115.1217,-33.8049],[115.121,-33.8066],[115.1219,-33.8068],[115.1219,-33.8074],[115.1215,-33.8074],[115.1213,-33.807],[115.1214,-33.8067],[115.121,-33.8066],[115.1321,-33.779],[115.1358,-33.7748],[115.1362,-33.7741],[115.1377,-33.7705],[115.1387,-33.769],[115.1518,-33.7568],[115.1555,-33.7518],[115.1559,-33.7511],[115.1577,-33.7464],[115.1664,-33.7231],[115.1672,-33.7218],[115.169,-33.7195],[115.1745,-33.7131],[115.1756,-33.7122],[115.1826,-33.7081],[115.1846,-33.7064],[115.1872,-33.7033],[115.1878,-33.7024],[115.1887,-33.6999],[115.1895,-33.6988],[115.1891,-33.6984],[115.1888,-33.6983],[115.1841,-33.6982],[115.1798,-33.6975],[115.1787,-33.6976],[115.1774,-33.6983],[115.1767,-33.6984],[115.1761,-33.6983],[115.1743,-33.6974],[115.1737,-33.6974],[115.1696,-33.6973],[115.1653,-33.6977],[115.1635,-33.697],[115.1615,-33.6969],[115.1613,-33.6968],[115.1588,-33.6939],[115.1573,-33.693],[115.1525,-33.6917],[115.151,-33.6897],[115.149,-33.6881],[115.1435,-33.686],[115.142,-33.6858],[115.142,-33.6809],[115.1418,-33.6778],[115.1422,-33.6762],[115.1423,-33.6754],[115.1425,-33.6674],[115.1424,-33.6671],[115.1454,-33.6654],[115.1479,-33.6649],[115.1509,-33.6649],[115.1513,-33.6367],[115.1514,-33.6363],[115.1474,-33.6344],[115.1435,-33.6338],[115.1361,-33.632],[115.1348,-33.6315],[115.1322,-33.6303],[115.1301,-33.6295],[115.1282,-33.6291],[115.1251,-33.6288],[115.1227,-33.6283],[115.1222,-33.6283],[115.1218,-33.628],[115.1206,-33.6273],[115.1193,-33.6264],[115.1108,-33.6196],[115.1094,-33.6186],[115.1084,-33.6181],[115.1074,-33.6181],[115.1064,-33.6175],[115.1051,-33.6173],[115.103,-33.6173],[115.1014,-33.6175],[115.101,-33.6177],[115.1008,-33.6176],[115.1008,-33.6174],[115.1011,-33.617],[115.102,-33.6166],[115.102,-33.616],[115.0954,-33.6056],[115.0874,-33.5928],[115.0867,-33.5921],[115.0828,-33.5908],[115.0822,-33.5904],[115.0816,-33.5896],[115.081,-33.589],[115.0828,-33.5866],[115.0846,-33.5848],[115.0856,-33.5841],[115.0872,-33.5833],[115.0876,-33.5828],[115.0874,-33.5821],[115.0863,-33.581],[115.0859,-33.5793],[115.0859,-33.579],[115.0864,-33.5785],[115.0878,-33.5778],[115.0889,-33.5771],[115.0891,-33.5769],[115.0892,-33.5764],[115.0889,-33.5759],[115.0883,-33.5755],[115.0871,-33.5753],[115.0871,-33.5748],[115.0867,-33.5742],[115.087,-33.574],[115.0873,-33.5743],[115.0874,-33.5742],[115.0869,-33.5738],[115.0868,-33.5738],[115.087,-33.574],[115.0867,-33.5742],[115.0871,-33.5748],[115.0871,-33.5753],[115.0883,-33.5755],[115.0889,-33.5759],[115.0892,-33.5764],[115.0891,-33.5769],[115.0889,-33.5771],[115.0878,-33.5778],[115.0864,-33.5785],[115.0859,-33.579],[115.0859,-33.5793],[115.0863,-33.581],[115.0874,-33.5821],[115.0876,-33.5828],[115.0872,-33.5833],[115.0856,-33.5841],[115.0846,-33.5848],[115.0828,-33.5866],[115.081,-33.589],[115.0816,-33.5896],[115.0822,-33.5904],[115.0828,-33.5908],[115.0867,-33.5921],[115.0874,-33.5928],[115.0954,-33.6056],[115.102,-33.616],[115.1023,-33.6168],[115.1014,-33.617],[115.1014,-33.6174],[115.1051,-33.6173],[115.1076,-33.6177],[115.1105,-33.6193],[115.1193,-33.6264],[115.1206,-33.6273],[115.1214,-33.6277],[115.1224,-33.6279],[115.1232,-33.6284],[115.1242,-33.6287],[115.1282,-33.6291],[115.1301,-33.6295],[115.1322,-33.6303],[115.1348,-33.6315],[115.1361,-33.632],[115.1435,-33.6338],[115.1474,-33.6344],[115.1514,-33.6363],[115.1513,-33.6367],[115.1509,-33.6649],[115.1479,-33.6649],[115.1454,-33.6654],[115.1424,-33.6671],[115.1425,-33.6674],[115.1423,-33.6754],[115.1422,-33.6762],[115.1418,-33.6778],[115.142,-33.6809],[115.142,-33.6858],[115.1435,-33.686],[115.149,-33.6881],[115.151,-33.6897],[115.1525,-33.6917],[115.1573,-33.693],[115.1588,-33.6939],[115.1613,-33.6968],[115.1615,-33.6969],[115.1635,-33.697],[115.1653,-33.6977],[115.1696,-33.6973],[115.1737,-33.6974],[115.1743,-33.6974],[115.1761,-33.6983],[115.1767,-33.6984],[115.1774,-33.6983],[115.1787,-33.6976],[115.1798,-33.6975],[115.1841,-33.6982],[115.1888,-33.6983],[115.1891,-33.6984],[115.1895,-33.6988],[115.1887,-33.6999],[115.1878,-33.7024],[115.1872,-33.7033],[115.1846,-33.7064],[115.1826,-33.7081],[115.1756,-33.7122],[115.1745,-33.7131],[115.1719,-33.716],[115.1672,-33.7218],[115.1661,-33.7235],[115.1577,-33.7464],[115.1559,-33.7511],[115.1555,-33.7518],[115.1518,-33.7568],[115.1387,-33.769],[115.1377,-33.7705],[115.1362,-33.7741],[115.1358,-33.7748],[115.1324,-33.7786],[115.1319,-33.7794],[115.1041,-33.8494],[115.1037,-33.8501],[115.1012,-33.8526],[115.1009,-33.853],[115.0885,-33.8807],[115.0852,-33.901],[115.0852,-33.9019],[115.0855,-33.908],[115.0854,-33.9091],[115.0818,-33.9176],[115.0815,-33.9191],[115.0803,-33.9282],[115.0803,-33.9295],[115.0805,-33.9302],[115.0812,-33.9318],[115.0813,-33.9331],[115.0816,-33.9334],[115.0819,-33.9335],[115.0819,-33.9337],[115.0797,-33.9368],[115.0773,-33.9392],[115.0744,-33.9427],[115.0737,-33.9449],[115.0737,-33.9454],[115.0743,-33.9466],[115.0744,-33.9475],[115.0743,-33.9483],[115.0744,-33.9485],[115.0734,-33.9529],[115.0736,-33.9538],[115.0721,-33.9535],[115.063,-33.9535]],
+"margaret-river>bunbury>kings-park>perth-cbd>fremantle>bread-in-common":[[115.063,-33.9535],[115.0721,-33.9535],[115.0734,-33.9537],[115.0734,-33.9528],[115.0741,-33.9498],[115.0741,-33.9486],[115.0743,-33.9483],[115.0744,-33.9475],[115.0743,-33.9466],[115.0737,-33.9454],[115.0737,-33.9449],[115.0744,-33.9427],[115.0773,-33.9392],[115.0797,-33.9368],[115.0814,-33.9343],[115.0814,-33.934],[115.0812,-33.9337],[115.0811,-33.9321],[115.0803,-33.9295],[115.0803,-33.9288],[115.0815,-33.9191],[115.0818,-33.9176],[115.0854,-33.9091],[115.0855,-33.908],[115.0852,-33.9019],[115.0852,-33.901],[115.0885,-33.8807],[115.1009,-33.853],[115.1012,-33.8526],[115.1037,-33.8501],[115.1041,-33.8494],[115.1319,-33.7794],[115.1324,-33.7786],[115.1358,-33.7748],[115.1362,-33.7741],[115.1377,-33.7705],[115.1387,-33.769],[115.1518,-33.7568],[115.1555,-33.7518],[115.1559,-33.7511],[115.1577,-33.7464],[115.1661,-33.7235],[115.1672,-33.7218],[115.1682,-33.7205],[115.1719,-33.716],[115.1745,-33.7131],[115.1756,-33.7122],[115.1826,-33.7081],[115.1844,-33.7066],[115.1875,-33.7028],[115.1885,-33.7003],[115.189,-33.6996],[115.1901,-33.6984],[115.1914,-33.6975],[115.1975,-33.6957],[115.1995,-33.6953],[115.2013,-33.6953],[115.205,-33.6957],[115.2087,-33.6963],[115.2105,-33.6963],[115.2119,-33.6962],[115.2168,-33.6951],[115.2217,-33.6945],[115.2233,-33.6941],[115.2247,-33.6934],[115.2261,-33.6923],[115.2292,-33.6883],[115.2297,-33.6874],[115.23,-33.6865],[115.2301,-33.6847],[115.232,-33.6846],[115.2358,-33.6834],[115.2368,-33.683],[115.2408,-33.6808],[115.2493,-33.6771],[115.2509,-33.676],[115.2512,-33.6755],[115.2517,-33.6752],[115.2523,-33.6747],[115.2527,-33.674],[115.2529,-33.6739],[115.2532,-33.674],[115.2537,-33.6745],[115.2544,-33.675],[115.2551,-33.6753],[115.2565,-33.6756],[115.2616,-33.6757],[115.2694,-33.6764],[115.287,-33.6756],[115.2887,-33.6754],[115.2914,-33.6747],[115.2998,-33.6713],[115.3017,-33.6709],[115.3031,-33.6707],[115.3065,-33.6706],[115.3153,-33.6708],[115.3161,-33.6705],[115.3178,-33.6708],[115.3404,-33.6712],[115.343,-33.6711],[115.3457,-33.6706],[115.3485,-33.6695],[115.3496,-33.6689],[115.3498,-33.6685],[115.3508,-33.6681],[115.3554,-33.6651],[115.3579,-33.6639],[115.3586,-33.6633],[115.3599,-33.6633],[115.3632,-33.6624],[115.3674,-33.6615],[115.3997,-33.6553],[115.4013,-33.6552],[115.4034,-33.6553],[115.408,-33.6563],[115.4096,-33.6564],[115.4146,-33.6563],[115.4163,-33.6562],[115.4184,-33.6557],[115.4191,-33.6555],[115.422,-33.6539],[115.4276,-33.6501],[115.43,-33.649],[115.4367,-33.6469],[115.4389,-33.6459],[115.4481,-33.6407],[115.4527,-33.6379],[115.4578,-33.6342],[115.4724,-33.6227],[115.4751,-33.6202],[115.4776,-33.6175],[115.4793,-33.616],[115.48,-33.6156],[115.482,-33.6147],[115.4836,-33.6142],[115.4906,-33.6136],[115.4935,-33.6129],[115.4952,-33.612],[115.5116,-33.602],[115.5135,-33.6002],[115.5147,-33.5987],[115.5233,-33.5841],[115.524,-33.582],[115.5248,-33.5766],[115.5254,-33.5752],[115.526,-33.5742],[115.527,-33.573],[115.5403,-33.5613],[115.5412,-33.5606],[115.5474,-33.5571],[115.5497,-33.5553],[115.5601,-33.5444],[115.5613,-33.5425],[115.5637,-33.5369],[115.5643,-33.5359],[115.5656,-33.5345],[115.569,-33.5312],[115.5701,-33.5298],[115.571,-33.5279],[115.5722,-33.5234],[115.5724,-33.5215],[115.5724,-33.5176],[115.5727,-33.5162],[115.5784,-33.4988],[115.5797,-33.496],[115.5823,-33.4914],[115.5877,-33.4797],[115.5941,-33.4704],[115.5964,-33.4658],[115.5993,-33.4616],[115.6014,-33.459],[115.6046,-33.4544],[115.6078,-33.4491],[115.6114,-33.4441],[115.6139,-33.4401],[115.6166,-33.4344],[115.6223,-33.4175],[115.6231,-33.4156],[115.6238,-33.4144],[115.6257,-33.4123],[115.6322,-33.4077],[115.6342,-33.4059],[115.6357,-33.4039],[115.6376,-33.4004],[115.6381,-33.3993],[115.6388,-33.397],[115.6409,-33.3931],[115.6429,-33.3883],[115.6437,-33.3863],[115.6436,-33.3858],[115.6439,-33.3854],[115.6464,-33.3785],[115.6469,-33.3762],[115.6471,-33.3747],[115.647,-33.3728],[115.6468,-33.3708],[115.6465,-33.3694],[115.645,-33.3651],[115.6445,-33.3646],[115.6446,-33.3639],[115.6436,-33.3612],[115.6426,-33.3598],[115.6421,-33.3593],[115.6413,-33.3564],[115.6412,-33.3554],[115.6413,-33.3544],[115.6436,-33.3477],[115.6444,-33.3456],[115.6451,-33.3448],[115.6459,-33.3428],[115.6461,-33.3414],[115.6466,-33.3403],[115.647,-33.3399],[115.6479,-33.3395],[115.649,-33.3406],[115.6502,-33.341],[115.6553,-33.3403],[115.6626,-33.3372],[115.6653,-33.3363],[115.6665,-33.3355],[115.667,-33.3354],[115.6675,-33.3355],[115.6678,-33.3357],[115.6689,-33.336],[115.6767,-33.336],[115.6792,-33.3359],[115.6794,-33.336],[115.6795,-33.3366],[115.6799,-33.3366],[115.6799,-33.3362],[115.6812,-33.3362],[115.6812,-33.3365],[115.6809,-33.3365],[115.6809,-33.3362],[115.6799,-33.3362],[115.6799,-33.3366],[115.6795,-33.3366],[115.6793,-33.336],[115.6795,-33.3358],[115.6871,-33.3336],[115.6891,-33.3327],[115.6911,-33.3315],[115.6959,-33.3279],[115.6977,-33.327],[115.7006,-33.3263],[115.7126,-33.3251],[115.7155,-33.3246],[115.7173,-33.3241],[115.7191,-33.3233],[115.7251,-33.3202],[115.7272,-33.3196],[115.7304,-33.3191],[115.7317,-33.3187],[115.7333,-33.318],[115.7348,-33.3169],[115.7359,-33.3158],[115.7366,-33.3148],[115.7382,-33.3117],[115.7403,-33.3093],[115.7408,-33.3086],[115.7416,-33.307],[115.7421,-33.3047],[115.742,-33.3036],[115.7413,-33.2996],[115.7414,-33.298],[115.7418,-33.2959],[115.7426,-33.2941],[115.7435,-33.2927],[115.7448,-33.2913],[115.7492,-33.288],[115.7504,-33.287],[115.7515,-33.2855],[115.7522,-33.284],[115.7526,-33.2824],[115.7531,-33.2752],[115.7535,-33.2723],[115.7534,-33.2698],[115.7529,-33.2692],[115.7531,-33.2683],[115.7522,-33.2651],[115.7466,-33.249],[115.7452,-33.2465],[115.7442,-33.2452],[115.7429,-33.2438],[115.7411,-33.2424],[115.7316,-33.2353],[115.7301,-33.2339],[115.7292,-33.2328],[115.728,-33.2306],[115.7271,-33.2259],[115.7265,-33.2245],[115.7177,-33.2062],[115.7172,-33.2048],[115.717,-33.2038],[115.7169,-33.1892],[115.7166,-33.1824],[115.7166,-33.1778],[115.7167,-33.1758],[115.7172,-33.1732],[115.7192,-33.1647],[115.7196,-33.1622],[115.72,-33.1487],[115.7215,-33.1134],[115.7232,-33.1037],[115.7242,-33.1014],[115.7267,-33.0977],[115.7273,-33.0961],[115.7275,-33.0951],[115.7276,-33.092],[115.7276,-33.0793],[115.7278,-33.0733],[115.7279,-33.061],[115.7282,-33.0597],[115.7298,-33.0555],[115.7302,-33.0536],[115.7339,-33.0285],[115.7342,-33.0259],[115.7351,-33.0105],[115.7347,-33.0082],[115.7312,-32.9964],[115.7309,-32.995],[115.7307,-32.9887],[115.7305,-32.9858],[115.7256,-32.9625],[115.725,-32.9591],[115.7244,-32.9538],[115.7202,-32.9339],[115.7201,-32.9255],[115.7199,-32.9245],[115.7145,-32.8988],[115.7127,-32.8931],[115.7122,-32.8905],[115.7122,-32.889],[115.7126,-32.8857],[115.7136,-32.8828],[115.7147,-32.8809],[115.7175,-32.8776],[115.725,-32.8688],[115.7269,-32.8659],[115.7278,-32.864],[115.7285,-32.862],[115.7288,-32.8604],[115.7291,-32.8592],[115.7292,-32.8565],[115.7291,-32.8549],[115.7287,-32.8523],[115.7241,-32.8405],[115.7235,-32.838],[115.7233,-32.8367],[115.7235,-32.8343],[115.7236,-32.8331],[115.7241,-32.8315],[115.7254,-32.829],[115.7263,-32.8276],[115.7286,-32.8253],[115.7301,-32.8242],[115.7376,-32.8196],[115.7401,-32.8174],[115.7418,-32.8154],[115.7427,-32.8141],[115.7436,-32.8123],[115.7443,-32.8103],[115.7446,-32.8088],[115.7449,-32.8061],[115.7447,-32.7931],[115.745,-32.7891],[115.7455,-32.786],[115.7483,-32.7717],[115.7487,-32.7688],[115.7488,-32.7669],[115.7488,-32.7506],[115.7488,-32.7356],[115.7489,-32.7329],[115.7497,-32.7285],[115.7509,-32.7248],[115.7518,-32.7226],[115.7528,-32.7207],[115.755,-32.7172],[115.7566,-32.7152],[115.764,-32.704],[115.7666,-32.7004],[115.793,-32.6617],[115.7989,-32.6532],[115.8063,-32.644],[115.8099,-32.6391],[115.8114,-32.6366],[115.8125,-32.6341],[115.8133,-32.6316],[115.814,-32.6283],[115.8143,-32.6262],[115.8143,-32.624],[115.8142,-32.5926],[115.8144,-32.5798],[115.8143,-32.5757],[115.8144,-32.5687],[115.8142,-32.5608],[115.8141,-32.5423],[115.8156,-32.5291],[115.8156,-32.5273],[115.8153,-32.5258],[115.8145,-32.523],[115.8133,-32.5209],[115.8119,-32.5191],[115.8097,-32.5169],[115.8069,-32.5152],[115.7959,-32.5099],[115.7935,-32.5085],[115.7924,-32.5077],[115.7874,-32.5034],[115.7859,-32.5017],[115.7852,-32.5007],[115.7843,-32.499],[115.7839,-32.4979],[115.7837,-32.4969],[115.7834,-32.4946],[115.7836,-32.4927],[115.7846,-32.4864],[115.7848,-32.4847],[115.7847,-32.4833],[115.7838,-32.4769],[115.7837,-32.4751],[115.7839,-32.4739],[115.7843,-32.4726],[115.7852,-32.471],[115.7885,-32.4661],[115.7909,-32.463],[115.7972,-32.4552],[115.8019,-32.4508],[115.8027,-32.4498],[115.8033,-32.4488],[115.8038,-32.4476],[115.8042,-32.4464],[115.8068,-32.434],[115.8077,-32.4305],[115.8099,-32.422],[115.8108,-32.4197],[115.8115,-32.4185],[115.8128,-32.4166],[115.819,-32.4096],[115.8214,-32.4066],[115.8225,-32.4049],[115.824,-32.4024],[115.8257,-32.3985],[115.8266,-32.3957],[115.8273,-32.3926],[115.8282,-32.3847],[115.8284,-32.3832],[115.8292,-32.3804],[115.8336,-32.3676],[115.834,-32.3653],[115.8343,-32.3624],[115.8343,-32.3412],[115.8341,-32.3395],[115.8337,-32.338],[115.8329,-32.3363],[115.8278,-32.3292],[115.8271,-32.3277],[115.8265,-32.3258],[115.8264,-32.3234],[115.8266,-32.3225],[115.827,-32.3208],[115.8307,-32.3111],[115.8314,-32.3089],[115.84,-32.2783],[115.8408,-32.2766],[115.8421,-32.2749],[115.8503,-32.266],[115.8513,-32.2648],[115.8522,-32.2632],[115.8529,-32.2608],[115.853,-32.2589],[115.8525,-32.2469],[115.8483,-32.2215],[115.8482,-32.218],[115.8486,-32.2145],[115.8494,-32.2118],[115.8503,-32.2094],[115.8547,-32.1994],[115.8559,-32.1961],[115.8566,-32.1933],[115.8568,-32.1916],[115.857,-32.1902],[115.8571,-32.1871],[115.8562,-32.1612],[115.8568,-32.1578],[115.8592,-32.1499],[115.8596,-32.1481],[115.8597,-32.1455],[115.8595,-32.1351],[115.8594,-32.1302],[115.8593,-32.129],[115.8588,-32.1271],[115.8566,-32.1225],[115.8535,-32.115],[115.8522,-32.1114],[115.8504,-32.105],[115.8496,-32.1006],[115.8493,-32.0976],[115.8491,-32.0926],[115.849,-32.0819],[115.8503,-32.0664],[115.8515,-32.0552],[115.852,-32.0531],[115.8544,-32.0453],[115.8553,-32.0394],[115.8556,-32.0384],[115.8563,-32.037],[115.8602,-32.0302],[115.8606,-32.029],[115.8607,-32.0278],[115.8605,-32.0267],[115.8601,-32.0256],[115.8581,-32.0225],[115.8574,-32.0209],[115.8573,-32.0196],[115.8576,-32.0151],[115.8574,-32.0132],[115.857,-32.012],[115.8542,-32.0057],[115.8537,-32.0041],[115.8537,-32.0025],[115.8547,-31.999],[115.8551,-31.9966],[115.8551,-31.994],[115.8548,-31.9922],[115.8543,-31.9906],[115.8517,-31.9851],[115.8484,-31.9797],[115.8482,-31.9789],[115.8481,-31.9766],[115.8472,-31.9711],[115.8463,-31.9689],[115.8461,-31.9681],[115.8461,-31.9669],[115.8471,-31.9617],[115.8476,-31.9595],[115.8487,-31.9573],[115.849,-31.9556],[115.8488,-31.9546],[115.8481,-31.9526],[115.8482,-31.951],[115.848,-31.9506],[115.847,-31.9506],[115.8457,-31.9534],[115.8458,-31.9536],[115.8445,-31.9541],[115.8443,-31.9544],[115.8439,-31.9589],[115.844,-31.9599],[115.8441,-31.96],[115.8439,-31.9599],[115.844,-31.9599],[115.8439,-31.9589],[115.8443,-31.9549],[115.8443,-31.954],[115.849,-31.9523],[115.8494,-31.9523],[115.8531,-31.9536],[115.8525,-31.9551],[115.8552,-31.956],[115.8565,-31.9561],[115.858,-31.9566],[115.8576,-31.9575],[115.8556,-31.9568],[115.8547,-31.9585],[115.8524,-31.9585],[115.8515,-31.9583],[115.8504,-31.9583],[115.8494,-31.9587],[115.8487,-31.9592],[115.8481,-31.96],[115.8475,-31.9614],[115.8464,-31.9677],[115.8465,-31.9685],[115.8473,-31.9703],[115.8476,-31.9715],[115.8489,-31.9799],[115.8492,-31.9806],[115.8509,-31.9832],[115.8521,-31.9853],[115.8545,-31.9904],[115.8551,-31.9923],[115.8554,-31.9944],[115.8554,-31.9966],[115.855,-31.9986],[115.854,-32.0025],[115.854,-32.0042],[115.8544,-32.0054],[115.8556,-32.0079],[115.857,-32.0113],[115.8577,-32.0133],[115.8579,-32.0154],[115.8576,-32.0196],[115.8578,-32.0212],[115.8584,-32.0225],[115.8604,-32.0255],[115.8609,-32.0266],[115.861,-32.0274],[115.861,-32.0287],[115.8606,-32.0301],[115.8566,-32.037],[115.8557,-32.0391],[115.8552,-32.0424],[115.8552,-32.0437],[115.8555,-32.0444],[115.8563,-32.0457],[115.8562,-32.0464],[115.8561,-32.0467],[115.8512,-32.0463],[115.8394,-32.0461],[115.8159,-32.0463],[115.7948,-32.0489],[115.7902,-32.0501],[115.7883,-32.0504],[115.7806,-32.0504],[115.7783,-32.0506],[115.7726,-32.0507],[115.7709,-32.0509],[115.7662,-32.051],[115.7654,-32.0509],[115.7648,-32.0511],[115.7641,-32.0508],[115.7632,-32.0507],[115.7593,-32.0507],[115.7577,-32.051],[115.7515,-32.0529],[115.752,-32.054],[115.7519,-32.0544],[115.7513,-32.0549],[115.7502,-32.0555],[115.7497,-32.0565],[115.749,-32.0571],[115.7483,-32.0564],[115.7484,-32.0562],[115.7476,-32.0557],[115.7472,-32.056],[115.747,-32.0559],[115.7456,-32.0563],[115.7455,-32.0561]],
+"b-shed>little-creatures":[[115.743,-32.0525],[115.7426,-32.0527],[115.7416,-32.0535],[115.7432,-32.0574],[115.7433,-32.0575],[115.7447,-32.0571],[115.7454,-32.0572],[115.7472,-32.0584],[115.7483,-32.0597],[115.7478,-32.06],[115.7463,-32.0593],[115.7444,-32.0588],[115.7442,-32.059]],
+"duck-duck-bruce>freo-markets>south-beach>perth-airport":[[115.7466,-32.0565],[115.7458,-32.057],[115.7453,-32.0557],[115.7467,-32.0552],[115.7462,-32.0538],[115.7468,-32.0553],[115.7494,-32.0567],[115.7502,-32.0575],[115.7479,-32.0592],[115.7489,-32.0603],[115.7494,-32.0612],[115.7505,-32.0637],[115.7508,-32.0651],[115.7509,-32.0684],[115.7522,-32.0738],[115.7524,-32.074],[115.7533,-32.074],[115.7534,-32.0765],[115.7533,-32.0766],[115.7527,-32.0766],[115.7528,-32.0779],[115.7522,-32.0779],[115.7522,-32.0778],[115.7528,-32.0777],[115.7527,-32.0766],[115.7533,-32.0766],[115.7534,-32.0764],[115.7531,-32.0739],[115.7566,-32.0739],[115.7572,-32.0736],[115.7573,-32.0716],[115.758,-32.0714],[115.7569,-32.0635],[115.7797,-32.0632],[115.7794,-32.0504],[115.7892,-32.0502],[115.7942,-32.0489],[115.8163,-32.0461],[115.8394,-32.0459],[115.8498,-32.0461],[115.8548,-32.0464],[115.8629,-32.0474],[115.8647,-32.0472],[115.8664,-32.0465],[115.8978,-32.0248],[115.8998,-32.0241],[115.9045,-32.023],[115.9076,-32.0224],[115.9089,-32.0219],[115.9183,-32.014],[115.9189,-32.0132],[115.9203,-32.0108],[115.9213,-32.0095],[115.9248,-32.0068],[115.9255,-32.0061],[115.926,-32.0055],[115.9265,-32.0045],[115.9274,-31.9993],[115.9278,-31.9981],[115.9292,-31.9953],[115.9294,-31.9945],[115.9295,-31.9935],[115.9294,-31.9911],[115.9296,-31.9902],[115.9301,-31.9894],[115.9372,-31.9832],[115.9389,-31.982],[115.9432,-31.9792],[115.9448,-31.9779],[115.9493,-31.9735],[115.9504,-31.9721],[115.9527,-31.9686],[115.953,-31.9675],[115.953,-31.9603],[115.9548,-31.9541],[115.9551,-31.9523],[115.9548,-31.9502],[115.9539,-31.9484],[115.9513,-31.9459],[115.9509,-31.9456],[115.9503,-31.9455],[115.9502,-31.9454],[115.9502,-31.9452],[115.9508,-31.9449],[115.9511,-31.9445],[115.9527,-31.9424],[115.9525,-31.9418],[115.9527,-31.9414],[115.9527,-31.9409],[115.9521,-31.9398],[115.9517,-31.9395],[115.9517,-31.9393],[115.9527,-31.9391],[115.9574,-31.9367],[115.958,-31.937],[115.9581,-31.9377],[115.9589,-31.9381],[115.9591,-31.938],[115.9592,-31.9378],[115.9593,-31.9379],[115.9596,-31.9378],[115.9612,-31.9369]]};
 const DAYCOLORS=["#D9952B","#2F7FA8","#5E7F68","#8A5A3C","#9B4F8F","#C0573E","#3E5C9A"];
 const dark=matchMedia('(prefers-color-scheme: dark)').matches && document.documentElement.dataset.theme!=='light';
 const map=new maplibregl.Map({
@@ -266,7 +330,7 @@ const ready=new Promise(res=>map.on('load',()=>{
 }));
 const LL=id=>[places[id].lng,places[id].lat];
 const island=new Set(["rottnest","hotel-rottnest"]);
-const routeCache={};
+const routeCache={...ROUTES};
 async function roadLine(ids){
   const key=ids.join('>');
   if(key in routeCache) return routeCache[key];
@@ -304,19 +368,25 @@ function numbering(d){
 const WIKI={
   "perth-airport":["Perth Airport"],
   "perth-cbd":["Elizabeth Quay","Perth"],
-  "kings-park":["Lotterywest Federation Walkway","Kings Park, Western Australia"],
+  "kings-park":["Kings Park, Western Australia"],
   "fremantle":["Fremantle"],
+  "bread-in-common":["Fremantle"],
+  "duck-duck-bruce":["Fremantle"],
+  "south-beach":["South Fremantle, Western Australia","Fremantle"],
   "little-creatures":["Little Creatures","Fremantle Fishing Boat Harbour","Fremantle"],
   "b-shed":["Victoria Quay, Fremantle","Fremantle Harbour"],
   "freo-markets":["Fremantle Markets"],
   "rottnest":["Quokka","Rottnest Island"],
   "hotel-rottnest":["Hotel Rottnest","Thomson Bay","Rottnest Island"],
   "bunbury":["Bunbury, Western Australia"],
-  "busselton":["Busselton Jetty"],
   "meelup":["Meelup Beach","Meelup Regional Park","Geographe Bay"],
+  "injidup":["Injidup, Western Australia","Yallingup, Western Australia"],
+  "swings":["Yallingup, Western Australia"],
   "vasse-felix":["Vasse Felix","Margaret River wine region"],
+  "mr-dairy":["Cowaramup, Western Australia","Margaret River wine region"],
   "margaret-river":["Margaret River, Western Australia"],
-  "charcuterie":["Margaret River, Western Australia"],
+  "mr-bakery":["Margaret River, Western Australia"],
+  "34-blue":["Marron","Margaret River, Western Australia"],
   "surfers-point":["Prevelly, Western Australia","Surfers Point"],
   "lake-cave":["Lake Cave"],
   "boranup":["Boranup Forest","Eucalyptus diversicolor"]
@@ -395,42 +465,134 @@ async function highlight(i){
   map.fitBounds(bounds,{padding:50,maxZoom:14,duration:600});
 }
 
+/* Bookings, dates and the checklist are saved only in this browser (localStorage), never on the public site */
+const STORE='perth-trip-details';
+let details={};
+try{ details=JSON.parse(localStorage.getItem(STORE))||{}; }catch(e){}
+function saveDetails(){ try{ localStorage.setItem(STORE,JSON.stringify(details)); }catch(e){} }
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const STAYS=[
+  {key:'mr',town:'Margaret River',base:'Margaret River WA',days:[0,1,2,3,4],when:'Saturday to Wednesday'},
+  {key:'freo',town:'Fremantle',base:'Fremantle WA',days:[4,5,6],when:'Wednesday to Friday'}
+];
+const STAYFIELDS=[['name','Name'],['address','Address'],['checkin','Check-in'],['ref','Booking ref'],['notes','Notes (door code, wifi, host number)']];
+const TODO=[
+  ['flight','Flight home'],['car','Rental car, collected at Perth Airport'],['mr','Margaret River cabin'],['freo','Fremantle stay'],
+  ['lake-cave','Lake Cave tickets'],['wine','Tasting at Vasse Felix or Voyager Estate'],['bread','Dinner at Bread in Common'],
+  ['ferry','Rottnest ferry from B-Shed'],['bikes','E-bikes on Rottnest']
+];
+const stay=k=>(details.stays||{})[k]||{};
+function tripDate(i){ if(!details.start) return null; const [y,m,d]=details.start.split('-').map(Number); return new Date(y,m-1,d+i); }
+const fmtDate=dt=>dt.toLocaleDateString('en-AU',{day:'numeric',month:'short'});
+function todayIndex(){
+  const s=tripDate(0); if(!s) return null;
+  const t=new Date(); t.setHours(0,0,0,0);
+  const i=Math.round((t-s)/864e5); return i>=0 && i<days.length ? i : null;
+}
+
 const pick=document.getElementById('daypick');
 const allBtn=document.createElement('button'); allBtn.textContent='Whole trip';
 allBtn.onclick=()=>select(-1); pick.append(allBtn);
-days.forEach((d,i)=>{const b=document.createElement('button');b.textContent=d.day.slice(0,3);
-  b.onclick=()=>select(i); pick.append(b)});
+const tabs=days.map((d,i)=>{const b=document.createElement('button');
+  b.onclick=()=>select(i); pick.append(b); return b});
 const mapsLink=id=>{const p=places[id];return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.q||p.name)};
 const routeLink=r=>{const e=encodeURIComponent;let u='https://www.google.com/maps/dir/?api=1&travelmode=driving&origin='+e(r[0])+'&destination='+e(r[r.length-1]);if(r.length>2)u+='&waypoints='+r.slice(1,-1).map(e).join('%7C');return u};
+/* Start and end each day's route at the booked address, once it's been entered */
+const stayEnds=r=>r.map((p,k)=>{ if(k!==0 && k!==r.length-1) return p; const st=STAYS.find(x=>x.base===p); return st && stay(st.key).address || p; });
 const box=document.getElementById('days');
-days.forEach((d,i)=>{
-  const s=document.createElement('article'); s.className='day'; s.id='day'+i;
-  s.innerHTML=`<h2>${d.title}</h2><p class="when">${d.day}${d.base?` <span>/ sleep in ${d.base}</span>`:''}</p>`;
-  if(d.route) s.insertAdjacentHTML('beforeend',`<a class="go" href="${routeLink(d.route)}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3 3 10.5l7 2.5 2.5 7z"/></svg>Open route in Google Maps</a>`);
-  const ol=document.createElement('ol'); ol.className='stops';
-  const nums=numbering(d);
-  d.stops.forEach(([t,what,id,note,cook])=>{
-    const li=document.createElement('li');
-    const badge=id?`<span class="n">${nums.get(id).n}</span>`:'';
-    if(id){ li.className='has-pin'; li.addEventListener('click',e=>{ if(e.target.closest('a')) return; const m=markers[id]; if(m){ map.easeTo({center:m.getLngLat()}); showPop(m.pop,m.getLngLat()); } }); }
-    li.innerHTML=`<span class="t">${t}</span><p class="what${cook?' cook':''}">${badge}<strong>${what}</strong>${note?`<span class="note">${note}</span>`:''}${id&&!cook?` <a href="${mapsLink(id)}" target="_blank" rel="noopener">Open in Maps</a>`:''}</p>`;
-    ol.append(li);
+function renderDays(){
+  box.innerHTML='';
+  days.forEach((d,i)=>{
+    const dt=tripDate(i);
+    tabs[i].textContent=d.day.slice(0,3)+(dt?' '+dt.getDate():'');
+    const s=document.createElement('article'); s.className='day'; s.id='day'+i;
+    s.innerHTML=`<h2>${d.title}</h2><p class="when">${d.day}${dt?' '+fmtDate(dt):''}${d.base?` <span>/ sleep in ${d.base}</span>`:''}</p>`;
+    if(d.route) s.insertAdjacentHTML('beforeend',`<a class="go" href="${routeLink(stayEnds(d.route))}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3 3 10.5l7 2.5 2.5 7z"/></svg>Open route in Google Maps</a>`);
+    const ol=document.createElement('ol'); ol.className='stops';
+    const nums=numbering(d);
+    d.stops.forEach(([t,what,id,note,cook])=>{
+      const li=document.createElement('li');
+      const badge=id?`<span class="n">${nums.get(id).n}</span>`:'';
+      if(id){ li.className='has-pin'; li.addEventListener('click',e=>{ if(e.target.closest('a')) return; const m=markers[id]; if(m){ map.easeTo({center:m.getLngLat()}); showPop(m.pop,m.getLngLat()); } }); }
+      li.innerHTML=`<span class="t">${t}</span><p class="what${cook?' cook':''}">${badge}<strong>${what}</strong>${note?`<span class="note">${note}</span>`:''}${id&&!cook?` <a href="${mapsLink(id)}" target="_blank" rel="noopener">Open in Maps</a>`:''}</p>`;
+      ol.append(li);
+    });
+    s.append(ol);
+    box.append(s);
   });
-  s.append(ol);
-  if(i===1){
-    s.insertAdjacentHTML('beforeend',`<div class="changed"><h3>Why the markets moved to Sunday</h3><p>Fremantle Markets only opens Friday to Sunday, so the Thursday evening visit wouldn't have worked. Catching an earlier ferry back leaves time to shop before the 6 pm close.</p></div>`);
-  }
-  box.append(s);
+}
+function renderStays(){
+  const el=document.getElementById('stays'); el.innerHTML='';
+  STAYS.forEach(st=>{
+    const v=stay(st.key), has=STAYFIELDS.some(([f])=>v[f]);
+    const q=v.address||(v.name?v.name+' '+st.town:'');
+    const meta=[v.checkin&&'Check-in '+esc(v.checkin), v.ref&&'Ref '+esc(v.ref)].filter(Boolean).join(' &middot; ');
+    el.insertAdjacentHTML('beforeend',`<article class="flight stay" data-day="${st.days.join(',')}">
+      <p class="leg"><b>Staying</b> ${st.town}, ${st.when}</p>
+      ${v.name?`<p class="stayname">${esc(v.name)}</p>`:''}
+      ${v.address?`<span class="ap">${esc(v.address)}</span>`:''}
+      ${has?'':'<span class="ap">No booking details yet.</span>'}
+      ${meta?`<p class="meta">${meta}</p>`:''}
+      ${v.notes?`<p class="note">${esc(v.notes)}</p>`:''}
+      <p class="acts">${q?`<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}" target="_blank" rel="noopener">Open in Maps</a>`:''}<button class="link" type="button" data-edit="${st.key}">${has?'Edit':'Add details'}</button></p>
+    </article>`);
+  });
+  const h=details.home||{};
+  document.getElementById('home-flight').textContent=h.flight?'Scoot '+h.flight.replace(/^scoot\s*/i,''):'Scoot, flight number to confirm';
+  const arr=document.getElementById('home-arr');
+  arr.textContent=h.arr||'To confirm'; arr.classList.toggle('tbc',!h.arr);
+}
+function renderTodo(){
+  const done=details.done||{}, n=TODO.filter(([k])=>done[k]).length;
+  const el=document.getElementById('todo');
+  el.innerHTML=`<h2 id="todo-h">To book</h2><p class="hint">${n} of ${TODO.length} done. Ticks are saved in this browser only.</p><ul>${TODO.map(([k,label])=>`<li><label><input type="checkbox" data-todo="${k}"${done[k]?' checked':''}><span>${label}</span></label></li>`).join('')}</ul>`;
+}
+document.getElementById('todo').addEventListener('change',e=>{
+  const k=e.target.dataset.todo; if(!k) return;
+  details.done={...details.done,[k]:e.target.checked}; saveDetails(); renderTodo();
+  document.querySelector(`[data-todo="${k}"]`).focus();
 });
 
+/* Editor */
+const ed=document.getElementById('editor'), form=document.getElementById('edform');
+document.getElementById('f-stays').innerHTML=STAYS.map(st=>`<fieldset id="f-${st.key}"><legend>Staying in ${st.town}</legend>
+  <label>Name<input name="${st.key}.name" autocomplete="off"></label>
+  <label>Address<input name="${st.key}.address" autocomplete="off"></label>
+  <div class="pair"><label>Check-in<input name="${st.key}.checkin" placeholder="3:00 pm" autocomplete="off"></label><label>Booking ref<input name="${st.key}.ref" autocomplete="off"></label></div>
+  <label>Notes (door code, wifi, host number)<input name="${st.key}.notes" autocomplete="off"></label>
+</fieldset>`).join('');
+function openEditor(section){
+  form.elements.start.value=details.start||'';
+  const h=details.home||{};
+  form.elements['home.flight'].value=h.flight||''; form.elements['home.arr'].value=h.arr||'';
+  STAYS.forEach(st=>STAYFIELDS.forEach(([f])=>form.elements[`${st.key}.${f}`].value=stay(st.key)[f]||''));
+  ed.showModal();
+  const fs=document.getElementById('f-'+(section||'start'));
+  fs.scrollIntoView({block:'nearest'}); fs.querySelector('input').focus();
+}
+document.addEventListener('click',e=>{ const b=e.target.closest('[data-edit]'); if(b) openEditor(b.dataset.edit); });
+document.getElementById('ed-cancel').onclick=()=>ed.close();
+form.addEventListener('submit',()=>{
+  const val=n=>form.elements[n].value.trim();
+  details.start=val('start');
+  details.home={flight:val('home.flight'),arr:val('home.arr')};
+  details.stays={};
+  STAYS.forEach(st=>{ details.stays[st.key]={}; STAYFIELDS.forEach(([f])=>details.stays[st.key][f]=val(`${st.key}.${f}`)); });
+  saveDetails(); renderAll(); select(current);
+});
+
+let current=0;
 function select(i){
+  current=i;
   highlight(i);
   document.querySelectorAll('.day').forEach((el,j)=>el.hidden = !(i===-1 || j===i));
   document.getElementById('days').classList.toggle('single', i!==-1);
-  document.querySelectorAll('[data-day]').forEach(el=>{const d=+el.dataset.day; el.hidden = d===-1 ? i!==-1 : !(i===-1 || d===i)});
+  document.querySelectorAll('[data-day]').forEach(el=>{const ds=el.dataset.day.split(',').map(Number); el.hidden = ds.includes(-1) ? i!==-1 : !(i===-1 || ds.includes(i))});
   const fl=document.querySelector('.flights'); fl.hidden=[...fl.children].every(c=>c.hidden);
 }
-select(0);
+function renderAll(){ renderDays(); renderStays(); renderTodo(); }
+renderAll();
+select(todayIndex() ?? 0);
 </script>
 </body>
 </html>
