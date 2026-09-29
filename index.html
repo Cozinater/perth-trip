@@ -179,6 +179,15 @@ dialog .acts .grow{flex:1}
 #daypick .count{display:inline-block;min-width:1.25rem;font-size:.75rem;font-weight:700;line-height:1.25rem;border-radius:999px;background:var(--sun);color:#12324A;margin-left:.25rem}
 .todo li{display:flex;align-items:center;justify-content:space-between;gap:.5rem}
 .todo .x{background:none;border:0;color:var(--muted);font-size:1.2rem;line-height:1;cursor:pointer;padding:.25rem .45rem}
+.nextup{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:.75rem 1rem;margin:0 0 1.25rem}
+html.view-full .nextup{display:none}
+.nextup .nu-head{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;margin:0 0 .25rem}
+.nextup .lbl{font-family:var(--head);font-size:.85rem;font-weight:700;color:var(--suntext)}
+.nextup ul{list-style:none;margin:0;padding:0}
+.nextup label{display:flex;gap:.6rem;align-items:baseline;padding:.25rem 0;cursor:pointer}
+.nextup input{accent-color:var(--gum);width:1.05rem;height:1.05rem;flex:0 0 auto;transform:translateY(.12em)}
+.nextup input:checked + span{color:var(--muted);text-decoration:line-through}
+.nextup .nu-acts{display:flex;gap:1.25rem;margin:.2rem 0 0}
 .addtodo{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.5rem;margin-top:.75rem}
 #start-msg:empty{display:none}
 #start-msg{color:var(--danger)}
@@ -247,6 +256,7 @@ dialog .acts{display:flex;justify-content:flex-end;gap:.5rem;padding-top:.75rem;
     </div>
     <div class="panel">
     <div class="spend private" id="spend"></div>
+    <div class="nextup private" id="nextup"></div>
     <div class="flights">
       <article class="flight" data-day="0">
         <p class="leg"><b>Flying in</b> Saturday</p>
@@ -764,15 +774,31 @@ function renderTodo(){
     <form class="addtodo" id="addtodo"><input name="t" placeholder="Add something to book" autocomplete="off" aria-label="New item"><button class="btn" type="submit">Add</button></form>`;
   const nb=el.querySelector('#addtodo input'); nb.value=draft; if(focused) nb.focus();
   todoBtn.innerHTML=`To book${left?` <span class="count">${left}</span>`:''}`;
+  renderNextUp(list,n);
   document.getElementById('in-tag').hidden=booked('flight-in');
   document.getElementById('home-tag').hidden=booked('flight');
 }
+/* Sidebar card: just the next thing to book, with "Show all" to expand the whole list in place */
+let nuOpen=false;
+function renderNextUp(list,n){
+  const next=list.find(([,t])=>!t.done), shown=nuOpen?list:(next?[next]:[]);
+  document.getElementById('nextup').innerHTML=`<div class="nu-head"><span class="lbl">${nuOpen?'To book':'Next to book'}</span><span class="hint">${next?`${n} of ${list.length} done`:`All ${list.length} booked`}</span></div>
+    <ul>${shown.map(([k,t])=>`<li><label><input type="checkbox" data-todo="${k}"${t.done?' checked':''}><span>${esc(t.label)}</span></label></li>`).join('')}</ul>
+    <div class="nu-acts"><button class="link" type="button" data-nu="toggle" aria-expanded="${nuOpen}">${nuOpen?'Show less':`Show all ${list.length}`}</button><button class="link" type="button" data-nu="tab">Edit list</button></div>`;
+}
+function tickTodo(k,on){ change(d=>{ seedTodos(d); if(d.todos[k]) d.todos={...d.todos,[k]:{...d.todos[k],done:on}}; }); renderTodo(); }
+const nuEl=document.getElementById('nextup');
+nuEl.addEventListener('change',e=>{ const k=e.target.dataset.todo; if(k) tickTodo(k,e.target.checked); });
+nuEl.addEventListener('click',e=>{
+  const a=e.target.closest('[data-nu]')?.dataset.nu; if(!a) return;
+  if(a==='toggle'){ nuOpen=!nuOpen; renderTodo(); nuEl.querySelector('[data-nu="toggle"]').focus(); }
+  else { select(-3); scrollTo(0,0); }
+});
 const todoEl=document.getElementById('todo');
 todoEl.addEventListener('change',e=>{
   const k=e.target.dataset.todo; if(!k) return;
-  const on=e.target.checked;
-  change(d=>{ seedTodos(d); if(d.todos[k]) d.todos={...d.todos,[k]:{...d.todos[k],done:on}}; }); renderTodo();
-  document.querySelector(`[data-todo="${k}"]`)?.focus();
+  tickTodo(k,e.target.checked);
+  todoEl.querySelector(`[data-todo="${k}"]`)?.focus();
 });
 todoEl.addEventListener('click',e=>{
   const k=e.target.closest('[data-rmtodo]')?.dataset.rmtodo; if(!k) return;
