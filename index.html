@@ -149,6 +149,11 @@ legend{font-family:var(--head);font-weight:700;padding:.8rem 0 0;float:left;widt
 dialog label{display:grid;gap:.2rem;font-family:var(--head);font-size:.85rem;color:var(--muted)}
 dialog input{font-family:var(--body);font-size:1rem;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:.45rem .6rem;width:100%;min-width:0}
 .pair{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.join{display:grid;grid-template-columns:1fr auto;gap:.6rem;align-items:end}
+.join .btn{padding:.45rem 1rem}
+.top .side{display:flex;align-items:center;gap:.75rem}
+.sync{font-family:var(--head);font-size:.85rem;color:var(--muted)}
+#share-msg:empty{display:none}
 dialog .acts{display:flex;justify-content:flex-end;gap:.5rem;padding-top:.75rem;border-top:1px solid var(--line)}
 
 .changed{margin-top:1rem;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:.9rem 1rem;font-size:1rem}
@@ -162,7 +167,7 @@ dialog .acts{display:flex;justify-content:flex-end;gap:.5rem;padding-top:.75rem;
 </head>
 <body>
 <main class="page">
-  <header class="top"><h1>Perth to Margaret River, six days</h1><button class="btn" type="button" data-edit="start">Trip details</button></header>
+  <header class="top"><h1>Perth to Margaret River, six days</h1><div class="side"><span class="sync" id="sync" role="status"></span><button class="btn" type="button" data-edit="start">Trip details</button></div></header>
   <nav class="tabs" id="daypick" aria-label="Choose a day"></nav>
   <div class="layout">
     <div class="mapcol">
@@ -200,7 +205,11 @@ dialog .acts{display:flex;justify-content:flex-end;gap:.5rem;padding-top:.75rem;
 <dialog id="editor" aria-labelledby="ed-title">
   <form id="edform" method="dialog">
     <h2 id="ed-title">Trip details</h2>
-    <p class="hint">Saved only in this browser. Other people and devices won't see it, and it never goes on the public site.</p>
+    <p class="hint" id="ed-hint"></p>
+    <fieldset id="f-share"><legend>Share with your group</legend>
+      <div class="join"><label>Group passphrase<input name="pass" autocomplete="off" autocapitalize="off" spellcheck="false"></label><button class="btn" type="button" id="connect">Connect</button></div>
+      <p class="hint" id="share-msg" role="status"></p>
+    </fieldset>
     <fieldset id="f-start"><legend>Dates</legend>
       <label>The Saturday you fly in<input type="date" name="start"></label>
     </fieldset>
@@ -465,11 +474,69 @@ async function highlight(i){
   map.fitBounds(bounds,{padding:50,maxZoom:14,duration:600});
 }
 
-/* Bookings, dates and the checklist are saved only in this browser (localStorage), never on the public site */
-const STORE='perth-trip-details';
-let details={};
-try{ details=JSON.parse(localStorage.getItem(STORE))||{}; }catch(e){}
-function saveDetails(){ try{ localStorage.setItem(STORE,JSON.stringify(details)); }catch(e){} }
+/* Bookings, dates and the checklist. Always cached in this browser (localStorage); once a group passphrase is
+   entered they also sync through Firestore. Everything is encrypted with the passphrase before it leaves the
+   browser, and the passphrase also picks the record, so the public site never exposes the details. */
+const FIREBASE={projectId:'perth-trip'};
+const STORE='perth-trip-details', PASS='perth-trip-pass';
+let details={}, pass='';
+try{ details=JSON.parse(localStorage.getItem(STORE))||{}; pass=localStorage.getItem(PASS)||''; }catch(e){}
+function cache(){ try{ localStorage.setItem(STORE,JSON.stringify(details)); if(pass) localStorage.setItem(PASS,pass); else localStorage.removeItem(PASS); }catch(e){} }
+
+const utf8=new TextEncoder();
+const b64=buf=>{ let s=''; for(const b of new Uint8Array(buf)) s+=String.fromCharCode(b); return btoa(s); };
+const unb64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+async function passKey(p){
+  const raw=await crypto.subtle.importKey('raw',utf8.encode(p),'PBKDF2',false,['deriveKey']);
+  const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:utf8.encode('perth-trip-v1'),iterations:200000,hash:'SHA-256'},raw,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+  const h=new Uint8Array(await crypto.subtle.digest('SHA-256',utf8.encode('perth-trip-id:'+p)));
+  return {key,id:[...h.slice(0,16)].map(b=>b.toString(16).padStart(2,'0')).join('')};
+}
+const docUrl=id=>`https://firestore.googleapis.com/v1/projects/${FIREBASE.projectId}/databases/(default)/documents/trips/${id}`;
+async function pullTrip(c){
+  const r=await fetch(docUrl(c.id),{cache:'no-store'});
+  if(r.status===404) return null;
+  if(!r.ok) throw new Error('read '+r.status);
+  const f=(await r.json()).fields;
+  const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(f.iv.stringValue)},c.key,unb64(f.data.stringValue));
+  return JSON.parse(new TextDecoder().decode(plain));
+}
+async function pushTrip(c,d){
+  const iv=crypto.getRandomValues(new Uint8Array(12));
+  const data=await crypto.subtle.encrypt({name:'AES-GCM',iv},c.key,utf8.encode(JSON.stringify(d)));
+  const r=await fetch(docUrl(c.id),{method:'PATCH',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({fields:{iv:{stringValue:b64(iv)},data:{stringValue:b64(data)},updated:{integerValue:String(Date.now())}}})});
+  if(!r.ok) throw new Error('write '+r.status);
+}
+
+/* Each edit is a small function that sets values. It's applied locally straight away, then re-applied on top
+   of the latest shared copy before writing, so two people editing different things don't overwrite each other. */
+let conn=null, pending=[], syncing=null;
+const setSync=t=>{ document.getElementById('sync').textContent=t; };
+function change(fn){ fn(details); cache(); pending.push(fn); sync(); }
+function sync(){
+  if(!conn) return Promise.resolve();
+  return syncing ||= (async()=>{
+    const c=conn, fns=pending; pending=[];
+    try{
+      const before=JSON.stringify(details);
+      const remote=await pullTrip(c);
+      const d=remote ?? JSON.parse(before);
+      fns.forEach(f=>f(d));
+      if(fns.length || !remote) await pushTrip(c,d);
+      if(c!==conn) return;
+      details=d; cache();
+      if(JSON.stringify(d)!==before){ renderAll(); select(current); }
+      setSync('Shared, up to date');
+    }catch(e){
+      pending=fns.concat(pending);
+      setSync('Offline, showing the copy on this device');
+    }finally{
+      syncing=null;
+      if(pending.length && conn) setTimeout(sync,5000);
+    }
+  })();
+}
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const STAYS=[
   {key:'mr',town:'Margaret River',base:'Margaret River WA',days:[0,1,2,3,4],when:'Saturday to Wednesday'},
@@ -545,11 +612,12 @@ function renderStays(){
 function renderTodo(){
   const done=details.done||{}, n=TODO.filter(([k])=>done[k]).length;
   const el=document.getElementById('todo');
-  el.innerHTML=`<h2 id="todo-h">To book</h2><p class="hint">${n} of ${TODO.length} done. Ticks are saved in this browser only.</p><ul>${TODO.map(([k,label])=>`<li><label><input type="checkbox" data-todo="${k}"${done[k]?' checked':''}><span>${label}</span></label></li>`).join('')}</ul>`;
+  el.innerHTML=`<h2 id="todo-h">To book</h2><p class="hint">${n} of ${TODO.length} done. ${conn?'Shared with your group.':'Ticks are saved in this browser only.'}</p><ul>${TODO.map(([k,label])=>`<li><label><input type="checkbox" data-todo="${k}"${done[k]?' checked':''}><span>${label}</span></label></li>`).join('')}</ul>`;
 }
 document.getElementById('todo').addEventListener('change',e=>{
   const k=e.target.dataset.todo; if(!k) return;
-  details.done={...details.done,[k]:e.target.checked}; saveDetails(); renderTodo();
+  const on=e.target.checked;
+  change(d=>{ d.done={...d.done,[k]:on}; }); renderTodo();
   document.querySelector(`[data-todo="${k}"]`).focus();
 });
 
@@ -561,11 +629,20 @@ document.getElementById('f-stays').innerHTML=STAYS.map(st=>`<fieldset id="f-${st
   <div class="pair"><label>Check-in<input name="${st.key}.checkin" placeholder="3:00 pm" autocomplete="off"></label><label>Booking ref<input name="${st.key}.ref" autocomplete="off"></label></div>
   <label>Notes (door code, wifi, host number)<input name="${st.key}.notes" autocomplete="off"></label>
 </fieldset>`).join('');
-function openEditor(section){
+function fillForm(){
   form.elements.start.value=details.start||'';
   const h=details.home||{};
   form.elements['home.flight'].value=h.flight||''; form.elements['home.arr'].value=h.arr||'';
   STAYS.forEach(st=>STAYFIELDS.forEach(([f])=>form.elements[`${st.key}.${f}`].value=stay(st.key)[f]||''));
+  form.elements.pass.value=pass;
+  document.getElementById('connect').textContent=conn?'Disconnect':'Connect';
+  form.elements.pass.readOnly=!!conn;
+  document.getElementById('ed-hint').textContent=conn
+    ? 'Shared with everyone using your group passphrase, and encrypted before it leaves this browser.'
+    : "Saved only in this browser. Other people and devices won't see it unless you connect a group passphrase below.";
+}
+function openEditor(section){
+  fillForm(); document.getElementById('share-msg').textContent='';
   ed.showModal();
   const fs=document.getElementById('f-'+(section||'start'));
   fs.scrollIntoView({block:'nearest'}); fs.querySelector('input').focus();
@@ -574,12 +651,27 @@ document.addEventListener('click',e=>{ const b=e.target.closest('[data-edit]'); 
 document.getElementById('ed-cancel').onclick=()=>ed.close();
 form.addEventListener('submit',()=>{
   const val=n=>form.elements[n].value.trim();
-  details.start=val('start');
-  details.home={flight:val('home.flight'),arr:val('home.arr')};
-  details.stays={};
-  STAYS.forEach(st=>{ details.stays[st.key]={}; STAYFIELDS.forEach(([f])=>details.stays[st.key][f]=val(`${st.key}.${f}`)); });
-  saveDetails(); renderAll(); select(current);
+  const start=val('start'), home={flight:val('home.flight'),arr:val('home.arr')}, stays={};
+  STAYS.forEach(st=>{ stays[st.key]={}; STAYFIELDS.forEach(([f])=>stays[st.key][f]=val(`${st.key}.${f}`)); });
+  change(d=>{ d.start=start; d.home=home; d.stays=stays; });
+  renderAll(); select(current);
 });
+document.getElementById('connect').onclick=async()=>{
+  const msg=document.getElementById('share-msg');
+  if(conn){ conn=null; pass=''; cache(); fillForm(); renderTodo(); setSync(''); msg.textContent='Disconnected. Details now stay on this device only.'; return; }
+  const p=form.elements.pass.value.trim();
+  if(p.length<8){ msg.textContent='Use at least 8 characters. A few random words works well.'; return; }
+  msg.textContent='Connecting…';
+  try{
+    const c=await passKey(p), remote=await pullTrip(c);
+    if(remote) details=remote; else await pushTrip(c,details);
+    conn=c; pass=p; pending=[]; cache();
+    fillForm(); renderAll(); select(current); setSync('Shared, up to date');
+    msg.textContent=remote
+      ? "Connected. Loaded your group's details."
+      : 'Connected. Nobody had used this passphrase yet, so this started a new shared trip. If your group already set one up, check the spelling.';
+  }catch(e){ msg.textContent="Couldn't connect. Check your internet connection and try again."; }
+};
 
 let current=0;
 function select(i){
@@ -593,6 +685,12 @@ function select(i){
 function renderAll(){ renderDays(); renderStays(); renderTodo(); }
 renderAll();
 select(todayIndex() ?? 0);
+if(pass){
+  setSync('Connecting…');
+  passKey(pass).then(c=>{ conn=c; return sync(); }).then(()=>{ const t=todayIndex(); if(t!==null && current===0) select(t); });
+}
+setInterval(()=>{ if(!document.hidden) sync(); },30000);
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden) sync(); });
 </script>
 </body>
 </html>
