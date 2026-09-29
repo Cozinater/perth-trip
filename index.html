@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Perth to Margaret River, six days</title>
+<title>Perth Itinerary - May 2027</title>
 <meta name="description" content="Six days of Rottnest quokkas, karri forest, wineries and three nights of home cooking. Day-by-day plan and map.">
 <!-- Link preview (WhatsApp, Telegram, iMessage, Slack...) -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="Perth to Margaret River, six days">
+<meta property="og:title" content="Perth Itinerary - May 2027">
 <meta property="og:description" content="Six days of Rottnest quokkas, karri forest, wineries and three nights of home cooking. Day-by-day plan and map.">
 <meta property="og:url" content="https://cozinater.github.io/perth-trip/">
 <meta property="og:image" content="https://cozinater.github.io/perth-trip/preview.png">
@@ -16,15 +16,24 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://cozinater.github.io/perth-trip/preview.png">
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css">
-<script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script>try{ if(!localStorage.getItem('perth-trip-pass')) document.documentElement.classList.add('locked'); }catch(e){ document.documentElement.classList.add('locked'); }</script>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-title" content="Perth Trip">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#EDF0EC" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0F1E29" media="(prefers-color-scheme: dark)">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js" crossorigin="anonymous"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet" crossorigin="anonymous">
 <style>
 :root{
   --bg:#EDF0EC; --ink:#12324A; --muted:#4F6472; --line:#C9D3CF;
-  --ocean:#CFE0E8; --land:#E3E6DA; --gum:#5E7F68; --sun:#D9952B; --panel:#F7F8F5;
+  --ocean:#CFE0E8; --land:#E3E6DA; --gum:#5E7F68; --sun:#D9952B; --panel:#F7F8F5; --danger:#B3261E;
   --head:"Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
   --body:"Newsreader", Georgia, "Times New Roman", serif;
   box-sizing:border-box;
@@ -34,12 +43,12 @@
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --bg:#0F1E29; --ink:#E6EEF0; --muted:#9DB0BA; --line:#2A3F4D;
-    --ocean:#16303F; --land:#22323A; --gum:#8DB297; --sun:#E8A94A; --panel:#152632;
+    --ocean:#16303F; --land:#22323A; --gum:#8DB297; --sun:#E8A94A; --panel:#152632; --danger:#F2B8B5;
   }
 }
 :root[data-theme="dark"]{
   --bg:#0F1E29; --ink:#E6EEF0; --muted:#9DB0BA; --line:#2A3F4D;
-  --ocean:#16303F; --land:#22323A; --gum:#8DB297; --sun:#E8A94A; --panel:#152632;
+  --ocean:#16303F; --land:#22323A; --gum:#8DB297; --sun:#E8A94A; --panel:#152632; --danger:#F2B8B5;
 }
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*::before,*::after{box-sizing:inherit}
@@ -61,6 +70,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--sun);outline-offset
   .layout{grid-template-columns:minmax(0,1.5fr) minmax(360px,460px);gap:2.5rem;align-items:start;padding-top:1.25rem}
   .mapcol{position:sticky;top:calc(env(safe-area-inset-top,0px) + 4.25rem);height:calc(100vh - 10.5rem);display:flex;flex-direction:column}
   .mapcol .mapframe{flex:1;height:auto;min-height:0}
+  .layout.money{grid-template-columns:minmax(0,640px)}
 }
 .panel .flights{margin-bottom:1.5rem}
 [hidden]{display:none !important}
@@ -126,7 +136,7 @@ ol.stops li{display:grid;grid-template-columns:5.5rem 1fr;gap:.25rem 1rem;paddin
 .top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:.75rem 1rem}
 .btn{font-family:var(--head);font-weight:700;font-size:.95rem;border:1px solid var(--line);background:transparent;color:var(--ink);padding:.5rem 1rem;border-radius:10px;cursor:pointer}
 .btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.link{font-family:var(--head);font-size:.85rem;color:var(--gum);background:none;border:0;padding:0;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.link{font-family:var(--head);font-size:.85rem;color:var(--gum);background:none;border:0;padding:.35rem 0;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 .stays{display:grid;gap:.75rem;margin:0 0 1.5rem}
 .stayname{font-family:var(--head);font-weight:700;font-size:1.2rem;line-height:1.2;margin:0}
 .stay .ap{display:block;margin:.1rem 0 0}
@@ -147,13 +157,45 @@ dialog .hint{margin-bottom:.75rem}
 fieldset{border:0;border-top:1px solid var(--line);margin:0;padding:.8rem 0 .9rem;display:grid;gap:.6rem;min-width:0}
 legend{font-family:var(--head);font-weight:700;padding:.8rem 0 0;float:left;width:100%}
 dialog label{display:grid;gap:.2rem;font-family:var(--head);font-size:.85rem;color:var(--muted)}
-dialog input{font-family:var(--body);font-size:1rem;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:.45rem .6rem;width:100%;min-width:0}
+dialog input,dialog select,.money input,.gate input{font-family:var(--body);font-size:1rem;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:.45rem .6rem;width:100%;min-width:0}
 .pair{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
 .join{display:grid;grid-template-columns:1fr auto;gap:.6rem;align-items:end}
 .join .btn{padding:.45rem 1rem}
 .top .side{display:flex;align-items:center;gap:.75rem}
 .sync{font-family:var(--head);font-size:.85rem;color:var(--muted)}
 #share-msg:empty{display:none}
+.btn.danger{color:var(--danger);border-color:currentColor}
+dialog .acts .grow{flex:1}
+
+.gate{display:none}
+html.locked .gate{display:grid;place-items:center;min-height:100vh;min-height:100dvh;padding:1rem}
+html.locked main{display:none}
+.gatebox{width:min(360px,100%);display:grid;gap:.6rem}
+.gatetitle{font-family:var(--head);font-weight:800;font-size:2rem;line-height:1.05;letter-spacing:-.02em;margin:0 0 .5rem}
+.gatebox label{font-family:var(--head);font-size:.9rem;color:var(--muted)}
+#gatemsg:empty{display:none}
+
+.layout.money .mapcol{display:none}
+.money h2{font-family:var(--head);font-weight:700;font-size:1.7rem;line-height:1.1;margin:0 0 1rem}
+.money .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:.9rem 1rem;margin:0 0 1rem}
+.money h3{font-family:var(--head);font-size:1.05rem;margin:0}
+.money h4{font-family:var(--head);font-size:.95rem;color:var(--muted);margin:.8rem 0 .1rem}
+.money > .btn{margin:0 0 1rem}
+.chips{list-style:none;margin:.5rem 0 .6rem;padding:0;display:flex;flex-wrap:wrap;gap:.4rem}
+.chips li{display:inline-flex;align-items:center;gap:.35rem;font-family:var(--head);font-size:.95rem;border:1px solid var(--line);border-radius:999px;padding:.2rem .75rem}
+.chips .x{background:none;border:0;color:var(--muted);font-size:1.15rem;line-height:1;cursor:pointer;padding:0}
+.addp{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.5rem}
+.bals,.moves{list-style:none;margin:.4rem 0 0;padding:0}
+.bals li,.moves li{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;padding:.2rem 0;font-size:1rem}
+.bals .pos{color:var(--gum);font-family:var(--head);font-weight:700}
+.bals .neg{font-family:var(--head);font-weight:700}
+.exp{list-style:none;margin:0 0 1rem;padding:0;border-top:1px solid var(--line)}
+.exp button{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.1rem 1rem;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:.7rem 0;color:inherit;font:inherit;cursor:pointer}
+.exp .amt{font-family:var(--head);font-weight:700;font-variant-numeric:tabular-nums}
+.exp .sub{grid-column:1/-1;color:var(--muted);font-size:.95rem}
+#xsplit{display:flex;flex-wrap:wrap;gap:.4rem 1.25rem}
+.chk{display:flex;gap:.45rem;align-items:center;color:var(--ink);font-family:var(--body);font-size:1rem;cursor:pointer}
+.chk input{width:auto;accent-color:var(--gum)}
 #share{display:grid;gap:.6rem;justify-items:start}
 #share .join{width:100%}
 dialog .acts{display:flex;justify-content:flex-end;gap:.5rem;padding-top:.75rem;border-top:1px solid var(--line)}
@@ -168,8 +210,18 @@ dialog .acts{display:flex;justify-content:flex-end;gap:.5rem;padding-top:.75rem;
 </style>
 </head>
 <body>
+<div class="gate" id="gate">
+  <form class="gatebox" id="gateform">
+    <p class="gatetitle">Perth Itinerary - May 2027</p>
+    <label for="gate-p">Trip passphrase</label>
+    <input id="gate-p" name="p" type="password" autocomplete="current-password" required>
+    <button class="btn primary" type="submit">Open</button>
+    <p class="hint" id="gatemsg" role="status"></p>
+    <button class="link" type="button" id="gatecreate" hidden>Start a new trip with this passphrase</button>
+  </form>
+</div>
 <main class="page">
-  <header class="top"><h1>Perth to Margaret River, six days</h1><div class="side"><span class="sync" id="sync" role="status"></span><button class="btn" type="button" data-edit="start">Trip details</button></div></header>
+  <header class="top"><h1>Perth Itinerary - May 2027</h1><div class="side"><span class="sync" id="sync" role="status"></span><button class="btn" type="button" data-edit="start">Trip details</button></div></header>
   <nav class="tabs" id="daypick" aria-label="Choose a day"></nav>
   <div class="layout">
     <div class="mapcol">
@@ -200,6 +252,7 @@ dialog .acts{display:flex;justify-content:flex-end;gap:.5rem;padding-top:.75rem;
     <p class="drive" data-day="-1">About 900 km of driving, all in one rental car.</p>
     <section class="todo" id="todo" data-day="-1" aria-labelledby="todo-h"></section>
       <section id="days"></section>
+    <section class="money" id="money" data-day="-2" aria-label="Expenses"></section>
     </div>
   </div>
 </main>
@@ -208,7 +261,7 @@ dialog .acts{display:flex;justify-content:flex-end;gap:.5rem;padding-top:.75rem;
   <form id="edform" method="dialog">
     <h2 id="ed-title">Trip details</h2>
     <p class="hint" id="ed-hint"></p>
-    <fieldset id="f-share"><legend>Share with your group</legend>
+    <fieldset id="f-share"><legend>Invite your group</legend>
       <div id="share"></div>
       <p class="hint" id="share-msg" role="status"></p>
     </fieldset>
@@ -223,6 +276,23 @@ dialog .acts{display:flex;justify-content:flex-end;gap:.5rem;padding-top:.75rem;
     </fieldset>
     <div id="f-stays"></div>
     <div class="acts"><button class="btn" type="button" id="ed-cancel">Cancel</button><button class="btn primary" type="submit">Save</button></div>
+  </form>
+</dialog>
+
+<dialog id="xed" aria-labelledby="xed-title">
+  <form id="xform" method="dialog">
+    <h2 id="xed-title">Add an expense</h2>
+    <fieldset>
+      <label>What for<input name="what" required autocomplete="off" placeholder="Groceries for cooking night 1"></label>
+      <div class="pair">
+        <label>Amount<input name="amount" inputmode="decimal" required autocomplete="off" placeholder="0.00"></label>
+        <label>Currency<select name="cur"><option>AUD</option><option>SGD</option></select></label>
+      </div>
+      <label>Paid by<select name="by"></select></label>
+    </fieldset>
+    <fieldset><legend>Split equally between</legend><div id="xsplit"></div></fieldset>
+    <p class="hint" id="xmsg" role="status"></p>
+    <div class="acts"><button class="btn danger" type="button" id="xdel">Delete</button><span class="grow"></span><button class="btn" type="button" id="xcancel">Cancel</button><button class="btn primary" type="submit">Save</button></div>
   </form>
 </dialog>
 
@@ -329,8 +399,10 @@ const dark=matchMedia('(prefers-color-scheme: dark)').matches && document.docume
 const map=new maplibregl.Map({
   container:'map',
   style: dark ? 'https://tiles.openfreemap.org/styles/dark' : 'https://tiles.openfreemap.org/styles/liberty',
-  center:[115.5,-32.9], zoom:7, cooperativeGestures:false
+  center:[115.5,-32.9], zoom:7, cooperativeGestures:false, attributionControl:false
 });
+map.addControl(new maplibregl.AttributionControl({compact:true}));
+map.on('load',()=>document.querySelector('.maplibregl-ctrl-attrib')?.classList.remove('maplibregl-compact-show'));
 map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-left');
 const ready=new Promise(res=>map.on('load',()=>{
   map.addSource('routes',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
@@ -455,7 +527,6 @@ function pin(id,html,cls,detail){
   m.pop=pop; pins.push(m); return m;
 }
 async function highlight(i){
-  document.querySelectorAll('#daypick button').forEach((b,j)=>b.setAttribute('aria-pressed',j===i+1));
   const tok=++token;
   await ready; if(tok!==token) return;
   pins.forEach(m=>{m.pop.remove(); m.remove();}); pins=[]; openPop=null; feats=[]; for(const k in markers) delete markers[k];
@@ -477,9 +548,8 @@ async function highlight(i){
 }
 
 /* Bookings, dates and the checklist. Always cached in this browser (localStorage); once a group passphrase is
-   link is shared they also sync through Firestore. The link carries a random key after the #, which browsers
-   never send to any server. It picks the record and encrypts everything before it leaves the browser, so the
-   public site never exposes the details. */
+   trip passphrase is entered they sync through Firestore. The passphrase picks the record and encrypts
+   everything before it leaves the browser, so the public site never exposes the details. */
 const FIREBASE={projectId:'perth-trip'};
 const STORE='perth-trip-details', PASS='perth-trip-pass';
 let details={}, pass='';
@@ -521,22 +591,25 @@ function sync(){
   if(!conn) return Promise.resolve();
   return syncing ||= (async()=>{
     const c=conn, fns=pending; pending=[];
+    let failed=false;
     try{
-      const before=JSON.stringify(details);
       const remote=await pullTrip(c);
-      const d=remote ?? JSON.parse(before);
+      const d=remote ?? JSON.parse(JSON.stringify(details));
       fns.forEach(f=>f(d));
       if(fns.length || !remote) await pushTrip(c,d);
       if(c!==conn) return;
+      pending.forEach(f=>f(d));   // edits made while this sync was in flight; they go out on the next one
+      const changed=JSON.stringify(d)!==JSON.stringify(details);
       details=d; cache();
-      if(JSON.stringify(d)!==before){ renderAll(); select(current); }
+      if(changed){ renderAll(); select(current); }
       setSync('Shared, up to date');
     }catch(e){
+      failed=true;
       pending=fns.concat(pending);
       setSync('Offline, showing the copy on this device');
     }finally{
       syncing=null;
-      if(pending.length && conn) setTimeout(sync,5000);
+      if(pending.length && conn) setTimeout(sync,failed?5000:0);
     }
   })();
 }
@@ -561,9 +634,11 @@ function todayIndex(){
 }
 
 const pick=document.getElementById('daypick');
-const allBtn=document.createElement('button'); allBtn.textContent='Whole trip';
+const allBtn=document.createElement('button'); allBtn.textContent='Whole trip'; allBtn.dataset.view=-1;
 allBtn.onclick=()=>select(-1); pick.append(allBtn);
-const tabs=days.map((d,i)=>{const b=document.createElement('button');
+const moneyBtn=document.createElement('button'); moneyBtn.textContent='Expenses'; moneyBtn.dataset.view=-2;
+moneyBtn.onclick=()=>select(-2); pick.append(moneyBtn);
+const tabs=days.map((d,i)=>{const b=document.createElement('button'); b.dataset.view=i;
   b.onclick=()=>select(i); pick.append(b); return b});
 const mapsLink=id=>{const p=places[id];return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.q||p.name)};
 const routeLink=r=>{const e=encodeURIComponent;let u='https://www.google.com/maps/dir/?api=1&travelmode=driving&origin='+e(r[0])+'&destination='+e(r[r.length-1]);if(r.length>2)u+='&waypoints='+r.slice(1,-1).map(e).join('%7C');return u};
@@ -637,15 +712,10 @@ function fillForm(){
   const h=details.home||{};
   form.elements['home.flight'].value=h.flight||''; form.elements['home.arr'].value=h.arr||'';
   STAYS.forEach(st=>STAYFIELDS.forEach(([f])=>form.elements[`${st.key}.${f}`].value=stay(st.key)[f]||''));
-  document.getElementById('share').innerHTML=conn
-    ? `<p class="hint">Everyone who opens this link sees and edits the same details and ticks. Keep it to your group chat.</p>
-       <div class="join"><input readonly value="${esc(groupLink())}" aria-label="Group link" id="share-link"><button class="btn" type="button" id="copy">Copy link</button></div>
-       <button class="link" type="button" id="leave">Stop sharing on this device</button>`
-    : `<p class="hint">Get a private link to send your travel group. Anyone who opens it sees and edits the same bookings and ticks.</p>
-       <button class="btn" type="button" id="start">Start sharing</button>`;
-  document.getElementById('ed-hint').textContent=conn
-    ? 'Shared with everyone who has your group link, and encrypted before it leaves this browser.'
-    : "Saved only in this browser. Other people and devices won't see it unless you share it below.";
+  document.getElementById('share').innerHTML=`<p class="hint">Everyone opens the site with the same trip passphrase. This link fills it in for them, so keep it to your group chat.</p>
+    <div class="join"><input readonly value="${esc(inviteLink())}" aria-label="Invite link" id="share-link"><button class="btn" type="button" id="copy">Copy link</button></div>
+    <button class="link" type="button" id="leave">Lock this device</button>`;
+  document.getElementById('ed-hint').textContent='Shared with everyone who has the trip passphrase, and encrypted before it leaves this browser.';
 }
 function openEditor(section){
   fillForm(); document.getElementById('share-msg').textContent='';
@@ -662,46 +732,181 @@ form.addEventListener('submit',()=>{
   change(d=>{ d.start=start; d.home=home; d.stays=stays; });
   renderAll(); select(current);
 });
-const groupLink=()=>location.origin+location.pathname+'#trip='+pass;
-async function join(key){
-  conn=await passKey(key); pass=key; pending=[]; cache();
-  history.replaceState(null,'','#trip='+key);
-  setSync('Connecting…'); await sync();
-}
+const inviteLink=()=>location.origin+location.pathname+'#trip='+encodeURIComponent(pass);
 document.getElementById('share').addEventListener('click',async e=>{
   const msg=document.getElementById('share-msg');
-  if(e.target.id==='start'){
-    msg.textContent='Setting up…';
-    const key=b64(crypto.getRandomValues(new Uint8Array(18))).replace(/\+/g,'-').replace(/\//g,'_');
-    await join(key); fillForm(); renderTodo();
-    msg.textContent='Done. Copy the link and send it to your group.';
-  }else if(e.target.id==='copy'){
+  if(e.target.id==='copy'){
     const box=document.getElementById('share-link');
     try{ await navigator.clipboard.writeText(box.value); msg.textContent='Link copied.'; }
     catch(err){ box.select(); msg.textContent='Press and hold (or Ctrl+C) to copy the selected link.'; }
   }else if(e.target.id==='leave'){
-    conn=null; pass=''; cache(); history.replaceState(null,'',location.pathname);
-    fillForm(); renderTodo(); setSync('');
-    msg.textContent='Stopped. Details now stay on this device only. Open the group link again to rejoin.';
+    try{ localStorage.removeItem(STORE); localStorage.removeItem(PASS); }catch(err){}
+    location.replace(location.pathname);
   }
 });
+
+/* Passphrase gate. A passphrase that matches no trip is refused, so a typo can't quietly start an empty one */
+const gate=document.getElementById('gateform'), gateMsg=document.getElementById('gatemsg'), gateCreate=document.getElementById('gatecreate');
+async function unlock(p,create){
+  const c=await passKey(p), remote=await pullTrip(c);
+  if(!remote && !create) return false;
+  if(remote) details=remote; else await pushTrip(c,details);
+  conn=c; pass=p; pending=[]; cache();
+  document.documentElement.classList.remove('locked');
+  map.resize(); renderAll(); select(todayIndex() ?? 0); setSync('Shared, up to date');
+  return true;
+}
+async function tryGate(create){
+  const p=gate.elements.p.value.trim(); if(!p) return;
+  gateCreate.hidden=true; gateMsg.textContent=create?'Creating…':'Checking…';
+  try{
+    if(await unlock(p,create)) return;
+    gateMsg.textContent="That passphrase doesn't match a trip. Check the spelling with your group.";
+    if(p.length>=8) gateCreate.hidden=false; else gateMsg.textContent+=' New trips need at least 8 characters.';
+  }catch(err){ gateMsg.textContent="Couldn't reach the server. Check your internet connection and try again."; }
+}
+gate.addEventListener('submit',e=>{ e.preventDefault(); tryGate(false); });
+gateCreate.onclick=()=>tryGate(true);
+
+/* Expenses, Splitwise-style. Stored with the bookings (encrypted, shared). Amounts are in cents, and
+   people and expenses are keyed by id so additions from different phones merge instead of overwriting. */
+const CURS={AUD:'A$',SGD:'S$'};
+const money=(c,cur)=>CURS[cur]+(c/100).toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2});
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const people=()=>Object.entries(details.people||{}).sort((a,b)=>a[1].at-b[1].at);
+const pname=id=>(details.people||{})[id]?.name||'Someone';
+const expenses=()=>Object.entries(details.expenses||{}).sort((a,b)=>b[1].at-a[1].at);
+const usedBy=id=>Object.values(details.expenses||{}).some(e=>e.by===id||e.split.includes(id));
+function shares(e){ // equal split; leftover cents go to the first people listed
+  const n=e.split.length, base=Math.floor(e.amount/n), extra=e.amount-base*n;
+  return e.split.map((p,k)=>[p,base+(k<extra?1:0)]);
+}
+function balances(){ // per currency: positive means they're owed money
+  const out={};
+  Object.values(details.expenses||{}).forEach(e=>{
+    if(!e.split.length) return;
+    const b=out[e.cur]||={};
+    b[e.by]=(b[e.by]||0)+e.amount;
+    shares(e).forEach(([p,v])=>b[p]=(b[p]||0)-v);
+  });
+  return out;
+}
+function settleUp(b){ // largest debt to largest credit, repeated: at most n-1 payments
+  const debt=Object.entries(b).filter(([,v])=>v<0).map(([p,v])=>[p,-v]).sort((x,y)=>y[1]-x[1]);
+  const cred=Object.entries(b).filter(([,v])=>v>0).sort((x,y)=>y[1]-x[1]);
+  const out=[];
+  while(debt.length && cred.length){
+    const d=debt[0], c=cred[0], amt=Math.min(d[1],c[1]);
+    out.push([d[0],c[0],amt]); d[1]-=amt; c[1]-=amt;
+    if(!d[1]) debt.shift(); if(!c[1]) cred.shift();
+  }
+  return out;
+}
+function renderMoney(){
+  const ps=people(), ex=expenses(), bal=balances(), totals={};
+  ex.forEach(([,e])=>{ if(!e.settle) totals[e.cur]=(totals[e.cur]||0)+e.amount; });
+  const typing=document.querySelector('#addp input'), draft=typing?.value||'', hadFocus=typing&&document.activeElement===typing;
+  const splitText=e=>e.split.length===ps.length?'split between everyone':'split with '+e.split.map(pname).map(esc).join(', ');
+  document.getElementById('money').innerHTML=`<h2>Expenses</h2>
+    <div class="card"><h3>People</h3>
+      <ul class="chips">${ps.map(([id,p])=>`<li>${esc(p.name)}${usedBy(id)?'':`<button class="x" type="button" data-rmperson="${id}" aria-label="Remove ${esc(p.name)}">&times;</button>`}</li>`).join('')}</ul>
+      <form class="addp" id="addp"><input name="n" placeholder="Add a name" autocomplete="off" aria-label="Name"><button class="btn" type="submit">Add</button></form>
+    </div>
+    ${ps.length<2?'<p class="hint">Add at least two people to start splitting.</p>':'<button class="btn primary" type="button" data-expense="">Add an expense</button>'}
+    ${Object.entries(bal).map(([cur,b])=>{
+      const owed=ps.filter(([id])=>b[id]), moves=settleUp(b);
+      return `<div class="card"><h3>${cur==='AUD'?'Australian dollars':'Singapore dollars'}</h3><p class="hint">${money(totals[cur]||0,cur)} spent</p>
+        <ul class="bals">${owed.length?owed.map(([id,p])=>`<li><span>${esc(p.name)}</span><span class="${b[id]>0?'pos':'neg'}">${b[id]>0?'gets back':'owes'} ${money(Math.abs(b[id]),cur)}</span></li>`).join(''):'<li>All square.</li>'}</ul>
+        ${moves.length?`<h4>To settle up</h4><ul class="moves">${moves.map(([f,t,a])=>`<li><span>${esc(pname(f))} pays ${esc(pname(t))} <b>${money(a,cur)}</b></span><button class="link" type="button" data-settle="${f}|${t}|${a}|${cur}">Mark paid</button></li>`).join('')}</ul>`:''}
+      </div>`;}).join('')}
+    ${ex.length?`<ul class="exp">${ex.map(([id,e])=>`<li><button type="button" data-expense="${id}">
+      <span>${e.settle?`${esc(pname(e.by))} paid ${esc(pname(e.split[0]))}`:esc(e.what)}</span><span class="amt">${money(e.amount,e.cur)}</span>
+      <span class="sub">${e.settle?'Settle-up':`Paid by ${esc(pname(e.by))}, ${splitText(e)}`} &middot; ${new Date(e.at).toLocaleDateString('en-AU',{day:'numeric',month:'short'})}</span>
+    </button></li>`).join('')}</ul>`:''}`;
+  const box=document.querySelector('#addp input'); box.value=draft; if(hadFocus) box.focus();
+}
+const moneyEl=document.getElementById('money');
+moneyEl.addEventListener('submit',e=>{
+  e.preventDefault();
+  const name=e.target.elements.n.value.trim(); if(!name) return;
+  if(people().some(([,p])=>p.name.toLowerCase()===name.toLowerCase())){ e.target.elements.n.value=''; return; }
+  const id=uid(), at=Date.now();
+  change(d=>{ d.people={...d.people,[id]:{name,at}}; }); renderMoney();
+  document.querySelector('#addp input').focus();
+});
+moneyEl.addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  if(b.dataset.rmperson){ const id=b.dataset.rmperson; change(d=>{ d.people={...d.people}; delete d.people[id]; }); renderMoney(); }
+  else if('expense' in b.dataset) openExpense(b.dataset.expense);
+  else if(b.dataset.settle){
+    const [f,t,a,cur]=b.dataset.settle.split('|'), id=uid();
+    const x={what:'Settle-up',amount:+a,cur,by:f,split:[t],at:Date.now(),settle:true};
+    change(d=>{ d.expenses={...d.expenses,[id]:x}; }); renderMoney();
+  }
+});
+
+const xed=document.getElementById('xed'), xform=document.getElementById('xform'), xmsg=document.getElementById('xmsg');
+const ME='perth-trip-me';
+let editing=null;
+function openExpense(id){
+  editing=id||null;
+  const e=editing?details.expenses[editing]:null, ps=people();
+  let me=null, cur='AUD'; try{ [me,cur]=JSON.parse(localStorage.getItem(ME))||[null,'AUD']; }catch(err){}
+  document.getElementById('xed-title').textContent=e?(e.settle?'Settle-up':'Edit expense'):'Add an expense';
+  xform.elements.what.value=e?e.what:'';
+  xform.elements.amount.value=e?(e.amount/100).toFixed(2):'';
+  xform.elements.cur.value=e?e.cur:cur;
+  xform.elements.by.innerHTML=ps.map(([pid,p])=>`<option value="${pid}">${esc(p.name)}</option>`).join('');
+  xform.elements.by.value=e?e.by:((details.people||{})[me]?me:ps[0][0]);
+  document.getElementById('xsplit').innerHTML=ps.map(([pid,p])=>`<label class="chk"><input type="checkbox" value="${pid}"${!e||e.split.includes(pid)?' checked':''}><span>${esc(p.name)}</span></label>`).join('');
+  document.getElementById('xdel').hidden=!e; xmsg.textContent='';
+  xed.showModal();
+  if(!e) xform.elements.what.focus();
+}
+xform.addEventListener('submit',ev=>{
+  const amount=Math.round(parseFloat(xform.elements.amount.value.replace(/[^0-9.]/g,''))*100);
+  const split=[...document.querySelectorAll('#xsplit input:checked')].map(i=>i.value);
+  if(!(amount>0)){ ev.preventDefault(); xmsg.textContent='Enter an amount, like 42.50.'; return; }
+  if(!split.length){ ev.preventDefault(); xmsg.textContent='Pick at least one person to split with.'; return; }
+  const id=editing||uid(), old=editing?details.expenses[editing]:null;
+  const x={what:xform.elements.what.value.trim(),amount,cur:xform.elements.cur.value,by:xform.elements.by.value,split,at:old?old.at:Date.now()};
+  if(old?.settle) x.settle=true;
+  try{ localStorage.setItem(ME,JSON.stringify([x.by,x.cur])); }catch(err){}
+  change(d=>{ d.expenses={...d.expenses,[id]:x}; }); renderMoney();
+});
+document.getElementById('xcancel').onclick=()=>xed.close();
+document.getElementById('xdel').onclick=()=>{
+  const id=editing; xed.close();
+  change(d=>{ d.expenses={...d.expenses}; delete d.expenses[id]; }); renderMoney();
+};
 
 let current=0;
 function select(i){
   current=i;
-  highlight(i);
+  document.querySelectorAll('#daypick button').forEach(b=>{ const on=+b.dataset.view===i; b.setAttribute('aria-pressed',on); if(on) pick.scrollTo({left:b.offsetLeft-pick.clientWidth/2+b.offsetWidth/2,behavior:'smooth'}); });
+  const layout=document.querySelector('.layout'), wasMoney=layout.classList.contains('money');
+  layout.classList.toggle('money',i===-2);
+  if(i!==-2){ if(wasMoney) map.resize(); highlight(i); }
   document.querySelectorAll('.day').forEach((el,j)=>el.hidden = !(i===-1 || j===i));
   document.getElementById('days').classList.toggle('single', i!==-1);
   document.querySelectorAll('[data-day]').forEach(el=>{const ds=el.dataset.day.split(',').map(Number); el.hidden = ds.includes(-1) ? i!==-1 : !(i===-1 || ds.includes(i))});
   const fl=document.querySelector('.flights'); fl.hidden=[...fl.children].every(c=>c.hidden);
 }
-function renderAll(){ renderDays(); renderStays(); renderTodo(); }
+function renderAll(){ renderDays(); renderStays(); renderTodo(); renderMoney(); }
 renderAll();
 select(todayIndex() ?? 0);
-/* Opening the group link joins that trip; after that this browser remembers it */
-const linkKey=(location.hash.match(/trip=([\w-]{16,})/)||[])[1];
-if(linkKey||pass) join(linkKey||pass).then(()=>{ const t=todayIndex(); if(t!==null && current===0) select(t); });
+/* An invite link (#trip=passphrase) fills in the gate; the passphrase is then remembered and dropped from the URL */
+const linkPass=decodeURIComponent((location.hash.match(/trip=([^&]+)/)||[])[1]||'');
+if(linkPass) history.replaceState(null,'',location.pathname);
+if(linkPass && linkPass!==pass){
+  document.documentElement.classList.add('locked');
+  gate.elements.p.value=linkPass; tryGate(false);
+}else if(pass){
+  setSync('Connecting…');
+  passKey(pass).then(c=>{ conn=c; return sync(); }).then(()=>{ const t=todayIndex(); if(t!==null && current===0) select(t); });
+}
 setInterval(()=>{ if(!document.hidden) sync(); },30000);
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden) sync(); });
 </script>
 </body>

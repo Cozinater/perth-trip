@@ -1,0 +1,15 @@
+{
+  "name": "Perth Itinerary - May 2027",
+  "short_name": "Perth Trip",
+  "description": "Day-by-day plan, map, bookings and shared expenses for the Perth and Margaret River trip.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0F1E29",
+  "theme_color": "#12324A",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
