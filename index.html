@@ -154,6 +154,8 @@ dialog input{font-family:var(--body);font-size:1rem;color:var(--ink);background:
 .top .side{display:flex;align-items:center;gap:.75rem}
 .sync{font-family:var(--head);font-size:.85rem;color:var(--muted)}
 #share-msg:empty{display:none}
+#share{display:grid;gap:.6rem;justify-items:start}
+#share .join{width:100%}
 dialog .acts{display:flex;justify-content:flex-end;gap:.5rem;padding-top:.75rem;border-top:1px solid var(--line)}
 
 .changed{margin-top:1rem;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:.9rem 1rem;font-size:1rem}
@@ -207,7 +209,7 @@ dialog .acts{display:flex;justify-content:flex-end;gap:.5rem;padding-top:.75rem;
     <h2 id="ed-title">Trip details</h2>
     <p class="hint" id="ed-hint"></p>
     <fieldset id="f-share"><legend>Share with your group</legend>
-      <div class="join"><label>Group passphrase<input name="pass" autocomplete="off" autocapitalize="off" spellcheck="false"></label><button class="btn" type="button" id="connect">Connect</button></div>
+      <div id="share"></div>
       <p class="hint" id="share-msg" role="status"></p>
     </fieldset>
     <fieldset id="f-start"><legend>Dates</legend>
@@ -475,8 +477,9 @@ async function highlight(i){
 }
 
 /* Bookings, dates and the checklist. Always cached in this browser (localStorage); once a group passphrase is
-   entered they also sync through Firestore. Everything is encrypted with the passphrase before it leaves the
-   browser, and the passphrase also picks the record, so the public site never exposes the details. */
+   link is shared they also sync through Firestore. The link carries a random key after the #, which browsers
+   never send to any server. It picks the record and encrypts everything before it leaves the browser, so the
+   public site never exposes the details. */
 const FIREBASE={projectId:'perth-trip'};
 const STORE='perth-trip-details', PASS='perth-trip-pass';
 let details={}, pass='';
@@ -634,12 +637,15 @@ function fillForm(){
   const h=details.home||{};
   form.elements['home.flight'].value=h.flight||''; form.elements['home.arr'].value=h.arr||'';
   STAYS.forEach(st=>STAYFIELDS.forEach(([f])=>form.elements[`${st.key}.${f}`].value=stay(st.key)[f]||''));
-  form.elements.pass.value=pass;
-  document.getElementById('connect').textContent=conn?'Disconnect':'Connect';
-  form.elements.pass.readOnly=!!conn;
+  document.getElementById('share').innerHTML=conn
+    ? `<p class="hint">Everyone who opens this link sees and edits the same details and ticks. Keep it to your group chat.</p>
+       <div class="join"><input readonly value="${esc(groupLink())}" aria-label="Group link" id="share-link"><button class="btn" type="button" id="copy">Copy link</button></div>
+       <button class="link" type="button" id="leave">Stop sharing on this device</button>`
+    : `<p class="hint">Get a private link to send your travel group. Anyone who opens it sees and edits the same bookings and ticks.</p>
+       <button class="btn" type="button" id="start">Start sharing</button>`;
   document.getElementById('ed-hint').textContent=conn
-    ? 'Shared with everyone using your group passphrase, and encrypted before it leaves this browser.'
-    : "Saved only in this browser. Other people and devices won't see it unless you connect a group passphrase below.";
+    ? 'Shared with everyone who has your group link, and encrypted before it leaves this browser.'
+    : "Saved only in this browser. Other people and devices won't see it unless you share it below.";
 }
 function openEditor(section){
   fillForm(); document.getElementById('share-msg').textContent='';
@@ -656,22 +662,29 @@ form.addEventListener('submit',()=>{
   change(d=>{ d.start=start; d.home=home; d.stays=stays; });
   renderAll(); select(current);
 });
-document.getElementById('connect').onclick=async()=>{
+const groupLink=()=>location.origin+location.pathname+'#trip='+pass;
+async function join(key){
+  conn=await passKey(key); pass=key; pending=[]; cache();
+  history.replaceState(null,'','#trip='+key);
+  setSync('Connecting…'); await sync();
+}
+document.getElementById('share').addEventListener('click',async e=>{
   const msg=document.getElementById('share-msg');
-  if(conn){ conn=null; pass=''; cache(); fillForm(); renderTodo(); setSync(''); msg.textContent='Disconnected. Details now stay on this device only.'; return; }
-  const p=form.elements.pass.value.trim();
-  if(p.length<8){ msg.textContent='Use at least 8 characters. A few random words works well.'; return; }
-  msg.textContent='Connecting…';
-  try{
-    const c=await passKey(p), remote=await pullTrip(c);
-    if(remote) details=remote; else await pushTrip(c,details);
-    conn=c; pass=p; pending=[]; cache();
-    fillForm(); renderAll(); select(current); setSync('Shared, up to date');
-    msg.textContent=remote
-      ? "Connected. Loaded your group's details."
-      : 'Connected. Nobody had used this passphrase yet, so this started a new shared trip. If your group already set one up, check the spelling.';
-  }catch(e){ msg.textContent="Couldn't connect. Check your internet connection and try again."; }
-};
+  if(e.target.id==='start'){
+    msg.textContent='Setting up…';
+    const key=b64(crypto.getRandomValues(new Uint8Array(18))).replace(/\+/g,'-').replace(/\//g,'_');
+    await join(key); fillForm(); renderTodo();
+    msg.textContent='Done. Copy the link and send it to your group.';
+  }else if(e.target.id==='copy'){
+    const box=document.getElementById('share-link');
+    try{ await navigator.clipboard.writeText(box.value); msg.textContent='Link copied.'; }
+    catch(err){ box.select(); msg.textContent='Press and hold (or Ctrl+C) to copy the selected link.'; }
+  }else if(e.target.id==='leave'){
+    conn=null; pass=''; cache(); history.replaceState(null,'',location.pathname);
+    fillForm(); renderTodo(); setSync('');
+    msg.textContent='Stopped. Details now stay on this device only. Open the group link again to rejoin.';
+  }
+});
 
 let current=0;
 function select(i){
@@ -685,10 +698,9 @@ function select(i){
 function renderAll(){ renderDays(); renderStays(); renderTodo(); }
 renderAll();
 select(todayIndex() ?? 0);
-if(pass){
-  setSync('Connecting…');
-  passKey(pass).then(c=>{ conn=c; return sync(); }).then(()=>{ const t=todayIndex(); if(t!==null && current===0) select(t); });
-}
+/* Opening the group link joins that trip; after that this browser remembers it */
+const linkKey=(location.hash.match(/trip=([\w-]{16,})/)||[])[1];
+if(linkKey||pass) join(linkKey||pass).then(()=>{ const t=todayIndex(); if(t!==null && current===0) select(t); });
 setInterval(()=>{ if(!document.hidden) sync(); },30000);
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden) sync(); });
 </script>
