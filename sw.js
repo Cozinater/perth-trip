@@ -1,6 +1,6 @@
 /* Offline support. The page is network-first so updates show up straight away; the map library, fonts and
    map tiles are kept as they're used. Trip data (Firestore) is never cached here: the page keeps its own copy. */
-const CORE='core-v2', TILES='tiles', ASSETS='assets', TILE_LIMIT=2000;
+const CORE='core-v3', TILES='tiles', ASSETS='assets', TILE_LIMIT=2000;
 const PRECACHE=['./','manifest.webmanifest','icons/icon-192.png',
   'https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css',
   'https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js'];
@@ -33,7 +33,7 @@ self.addEventListener('fetch',e=>{
     return;
   }
   const name=url.hostname.endsWith('openfreemap.org') ? TILES
-    : /^(fonts\.googleapis\.com|fonts\.gstatic\.com|cdn\.jsdelivr\.net)$/.test(url.hostname) || url.origin===location.origin ? ASSETS
+    : /^(fonts\.googleapis\.com|fonts\.gstatic\.com|cdn\.jsdelivr\.net|www\.gstatic\.com)$/.test(url.hostname) || url.origin===location.origin ? ASSETS
     : null;
   if(!name) return;
   // Serve what's cached immediately and refresh it in the background

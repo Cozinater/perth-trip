@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://cozinater.github.io/perth-trip/preview.png">
 
-<script>try{ if(!localStorage.getItem('perth-trip-pass')) document.documentElement.classList.add('locked'); }catch(e){ document.documentElement.classList.add('locked'); }</script>
+<script>try{ if(localStorage.getItem('perth-trip-details')) document.documentElement.classList.add('member'); }catch(e){}</script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/icon-180.png">
@@ -33,7 +33,7 @@
 <style>
 :root{
   --bg:#EDF0EC; --ink:#12324A; --muted:#4F6472; --line:#C9D3CF;
-  --ocean:#CFE0E8; --land:#E3E6DA; --gum:#5E7F68; --sun:#D9952B; --panel:#F7F8F5; --danger:#B3261E;
+  --ocean:#CFE0E8; --land:#E3E6DA; --gum:#5E7F68; --sun:#D9952B; --panel:#F7F8F5; --danger:#B3261E; --suntext:#8A5208;
   --head:"Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
   --body:"Newsreader", Georgia, "Times New Roman", serif;
   box-sizing:border-box;
@@ -43,12 +43,12 @@
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --bg:#0F1E29; --ink:#E6EEF0; --muted:#9DB0BA; --line:#2A3F4D;
-    --ocean:#16303F; --land:#22323A; --gum:#8DB297; --sun:#E8A94A; --panel:#152632; --danger:#F2B8B5;
+    --ocean:#16303F; --land:#22323A; --gum:#8DB297; --sun:#E8A94A; --panel:#152632; --danger:#F2B8B5; --suntext:#E8A94A;
   }
 }
 :root[data-theme="dark"]{
   --bg:#0F1E29; --ink:#E6EEF0; --muted:#9DB0BA; --line:#2A3F4D;
-  --ocean:#16303F; --land:#22323A; --gum:#8DB297; --sun:#E8A94A; --panel:#152632; --danger:#F2B8B5;
+  --ocean:#16303F; --land:#22323A; --gum:#8DB297; --sun:#E8A94A; --panel:#152632; --danger:#F2B8B5; --suntext:#E8A94A;
 }
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*::before,*::after{box-sizing:inherit}
@@ -157,23 +157,33 @@ dialog .hint{margin-bottom:.75rem}
 fieldset{border:0;border-top:1px solid var(--line);margin:0;padding:.8rem 0 .9rem;display:grid;gap:.6rem;min-width:0}
 legend{font-family:var(--head);font-weight:700;padding:.8rem 0 0;float:left;width:100%}
 dialog label{display:grid;gap:.2rem;font-family:var(--head);font-size:.85rem;color:var(--muted)}
-dialog input,dialog select,.money input,.gate input{font-family:var(--body);font-size:1rem;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:.45rem .6rem;width:100%;min-width:0}
+dialog input,dialog select,.money input{font-family:var(--body);font-size:1rem;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:.45rem .6rem;width:100%;min-width:0}
 .pair{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
-.join{display:grid;grid-template-columns:1fr auto;gap:.6rem;align-items:end}
-.join .btn{padding:.45rem 1rem}
 .top .side{display:flex;align-items:center;gap:.75rem}
 .sync{font-family:var(--head);font-size:.85rem;color:var(--muted)}
-#share-msg:empty{display:none}
+.sync:empty{display:none}
 .btn.danger{color:var(--danger);border-color:currentColor}
 dialog .acts .grow{flex:1}
 
-.gate{display:none}
-html.locked .gate{display:grid;place-items:center;min-height:100vh;min-height:100dvh;padding:1rem}
-html.locked main{display:none}
-.gatebox{width:min(360px,100%);display:grid;gap:.6rem}
-.gatetitle{font-family:var(--head);font-weight:800;font-size:2rem;line-height:1.05;letter-spacing:-.02em;margin:0 0 .5rem}
-.gatebox label{font-family:var(--head);font-size:.9rem;color:var(--muted)}
-#gatemsg:empty{display:none}
+.notice{font-family:var(--head);font-size:.9rem;color:var(--muted);margin:0 0 .5rem}
+.notice:empty{display:none}
+#start-msg:empty{display:none}
+#start-msg{color:var(--danger)}
+#daypick .money-tab{border-color:var(--sun);color:var(--suntext);font-weight:700}
+#daypick .money-tab[aria-pressed="true"]{background:var(--sun);border-color:var(--sun);color:#12324A}
+#daypick .sep{flex:0 0 1px;align-self:stretch;background:var(--line);margin:.15rem .15rem}
+.spend{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.6rem 1rem;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--sun);border-radius:12px;padding:.8rem 1rem;margin:0 0 1.25rem}
+.spend .lbl{display:block;font-family:var(--head);font-size:.85rem;color:var(--suntext);font-weight:700}
+.spend .sum{font-family:var(--head);font-weight:700;font-size:1.25rem;font-variant-numeric:tabular-nums}
+.spend .go2{display:flex;align-items:center;gap:1rem}
+html.view-money .spend{display:none}
+.fab{display:none}
+@media (max-width:899px){
+  html.member:not(.view-money) .fab{display:inline-flex;align-items:center;gap:.35rem;position:fixed;right:1rem;bottom:calc(1rem + env(safe-area-inset-bottom,0px));z-index:20;
+    font-family:var(--head);font-weight:700;font-size:1rem;background:var(--sun);color:#12324A;border:0;border-radius:999px;padding:.8rem 1.15rem;box-shadow:0 4px 14px rgba(0,0,0,.3);cursor:pointer}
+}
+html:not(.member) .private{display:none !important}
+html.member .guest{display:none !important}
 
 .layout.money .mapcol{display:none}
 .money h2{font-family:var(--head);font-weight:700;font-size:1.7rem;line-height:1.1;margin:0 0 1rem}
@@ -184,7 +194,11 @@ html.locked main{display:none}
 .chips{list-style:none;margin:.5rem 0 .6rem;padding:0;display:flex;flex-wrap:wrap;gap:.4rem}
 .chips li{display:inline-flex;align-items:center;gap:.35rem;font-family:var(--head);font-size:.95rem;border:1px solid var(--line);border-radius:999px;padding:.2rem .75rem}
 .chips .x{background:none;border:0;color:var(--muted);font-size:1.15rem;line-height:1;cursor:pointer;padding:0}
-.addp{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.5rem}
+.addp{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) auto;gap:.5rem;margin-top:.5rem}
+@media (max-width:520px){ .addp{grid-template-columns:minmax(0,1fr) auto} .addp input[name="e"]{grid-row:2;grid-column:1} }
+#addwrap summary{display:inline-block;list-style:none}
+#addwrap summary::-webkit-details-marker{display:none}
+.money .spend.mine{display:flex}
 .bals,.moves{list-style:none;margin:.4rem 0 0;padding:0}
 .bals li,.moves li{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;padding:.2rem 0;font-size:1rem}
 .bals .pos{color:var(--gum);font-family:var(--head);font-weight:700}
@@ -193,11 +207,11 @@ html.locked main{display:none}
 .exp button{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.1rem 1rem;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:.7rem 0;color:inherit;font:inherit;cursor:pointer}
 .exp .amt{font-family:var(--head);font-weight:700;font-variant-numeric:tabular-nums}
 .exp .sub{grid-column:1/-1;color:var(--muted);font-size:.95rem}
+.mode{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem 1.25rem;margin:0 0 1rem}
 #xsplit{display:flex;flex-wrap:wrap;gap:.4rem 1.25rem}
 .chk{display:flex;gap:.45rem;align-items:center;color:var(--ink);font-family:var(--body);font-size:1rem;cursor:pointer}
 .chk input{width:auto;accent-color:var(--gum)}
-#share{display:grid;gap:.6rem;justify-items:start}
-#share .join{width:100%}
+dialog input::placeholder,.money input::placeholder{color:var(--muted);opacity:.55;font-style:italic}
 dialog .acts{display:flex;justify-content:flex-end;gap:.5rem;padding-top:.75rem;border-top:1px solid var(--line)}
 
 .changed{margin-top:1rem;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:.9rem 1rem;font-size:1rem}
@@ -210,24 +224,16 @@ dialog .acts{display:flex;justify-content:flex-end;gap:.5rem;padding-top:.75rem;
 </style>
 </head>
 <body>
-<div class="gate" id="gate">
-  <form class="gatebox" id="gateform">
-    <p class="gatetitle">Perth Itinerary - May 2027</p>
-    <label for="gate-p">Trip passphrase</label>
-    <input id="gate-p" name="p" type="password" autocomplete="current-password" required>
-    <button class="btn primary" type="submit">Open</button>
-    <p class="hint" id="gatemsg" role="status"></p>
-    <button class="link" type="button" id="gatecreate" hidden>Start a new trip with this passphrase</button>
-  </form>
-</div>
 <main class="page">
-  <header class="top"><h1>Perth Itinerary - May 2027</h1><div class="side"><span class="sync" id="sync" role="status"></span><button class="btn" type="button" data-edit="start">Trip details</button></div></header>
+  <header class="top"><h1>Perth Itinerary - May 2027</h1><div class="side"><span class="sync private" id="sync" role="status"></span><button class="btn private" type="button" data-edit="start">Trip details</button><button class="btn guest" type="button" id="signin">Sign in</button></div></header>
+  <p class="notice" id="notice" role="status"></p>
   <nav class="tabs" id="daypick" aria-label="Choose a day"></nav>
   <div class="layout">
     <div class="mapcol">
     <div class="mapframe"><div id="map" role="region" aria-label="Map of the route"></div></div>
     </div>
     <div class="panel">
+    <div class="spend private" id="spend"></div>
     <div class="flights">
       <article class="flight" data-day="0">
         <p class="leg"><b>Flying in</b> Saturday</p>
@@ -245,14 +251,14 @@ dialog .acts{display:flex;justify-content:flex-end;gap:.5rem;padding-top:.75rem;
           <div class="path"><span class="dur">&nbsp;</span><span class="rule"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg></span><span class="dur">Nonstop</span></div>
           <div class="end r"><span class="code">SIN</span><span class="tm tbc" id="home-arr">To confirm</span><span class="ap">Changi</span></div>
         </div>
-        <p class="meta"><span id="home-flight">Scoot, flight number to confirm</span> <button class="link" type="button" data-edit="home">Edit</button></p>
+        <p class="meta"><span id="home-flight">Scoot, flight number to confirm</span> <button class="link private" type="button" data-edit="home">Edit</button></p>
       </article>
     </div>
-    <div class="stays" id="stays"></div>
+    <div class="stays private" id="stays"></div>
     <p class="drive" data-day="-1">About 900 km of driving, all in one rental car.</p>
-    <section class="todo" id="todo" data-day="-1" aria-labelledby="todo-h"></section>
+    <section class="todo private" id="todo" data-day="-1" aria-labelledby="todo-h"></section>
       <section id="days"></section>
-    <section class="money" id="money" data-day="-2" aria-label="Expenses"></section>
+    <section class="money private" id="money" data-day="-2" aria-label="Expenses"></section>
     </div>
   </div>
 </main>
@@ -261,29 +267,38 @@ dialog .acts{display:flex;justify-content:flex-end;gap:.5rem;padding-top:.75rem;
   <form id="edform" method="dialog">
     <h2 id="ed-title">Trip details</h2>
     <p class="hint" id="ed-hint"></p>
-    <fieldset id="f-share"><legend>Invite your group</legend>
-      <div id="share"></div>
-      <p class="hint" id="share-msg" role="status"></p>
-    </fieldset>
     <fieldset id="f-start"><legend>Dates</legend>
       <label>The Saturday you fly in<input type="date" name="start"></label>
+      <p class="hint" id="start-msg" role="status"></p>
     </fieldset>
     <fieldset id="f-home"><legend>Flight home</legend>
       <div class="pair">
-        <label>Flight number<input name="home.flight" placeholder="TR 000" autocomplete="off"></label>
-        <label>Lands in Singapore<input name="home.arr" placeholder="11:30 pm" autocomplete="off"></label>
+        <label>Flight number<input name="home.flight" placeholder="e.g. TR 000" autocomplete="off"></label>
+        <label>Lands in Singapore<input name="home.arr" placeholder="e.g. 11:30 pm" autocomplete="off"></label>
       </div>
     </fieldset>
     <div id="f-stays"></div>
+    <fieldset id="f-account"><legend>Account</legend>
+      <p class="hint" id="acct"></p>
+      <button class="link" type="button" id="signout">Sign out</button>
+    </fieldset>
     <div class="acts"><button class="btn" type="button" id="ed-cancel">Cancel</button><button class="btn primary" type="submit">Save</button></div>
   </form>
+</dialog>
+
+<button class="fab private" type="button" id="fab" aria-label="Add an expense">+ Expense</button>
+
+<dialog id="denied" aria-labelledby="dn-title">
+  <h2 id="dn-title">Not on the trip list</h2>
+  <p class="hint" id="dn-text"></p>
+  <div class="acts"><button class="btn primary" type="button" id="dn-ok">OK</button></div>
 </dialog>
 
 <dialog id="xed" aria-labelledby="xed-title">
   <form id="xform" method="dialog">
     <h2 id="xed-title">Add an expense</h2>
     <fieldset>
-      <label>What for<input name="what" required autocomplete="off" placeholder="Groceries for cooking night 1"></label>
+      <label>What for<input name="what" required autocomplete="off" placeholder="e.g. Groceries for cooking night 1"></label>
       <div class="pair">
         <label>Amount<input name="amount" inputmode="decimal" required autocomplete="off" placeholder="0.00"></label>
         <label>Currency<select name="cur"><option>AUD</option><option>SGD</option></select></label>
@@ -547,57 +562,50 @@ async function highlight(i){
   map.fitBounds(bounds,{padding:50,maxZoom:14,duration:600});
 }
 
-/* Bookings, dates and the checklist. Always cached in this browser (localStorage); once a group passphrase is
-   trip passphrase is entered they sync through Firestore. The passphrase picks the record and encrypts
-   everything before it leaves the browser, so the public site never exposes the details. */
-const FIREBASE={projectId:'perth-trip'};
-const STORE='perth-trip-details', PASS='perth-trip-pass';
-let details={}, pass='';
-try{ details=JSON.parse(localStorage.getItem(STORE))||{}; pass=localStorage.getItem(PASS)||''; }catch(e){}
-function cache(){ try{ localStorage.setItem(STORE,JSON.stringify(details)); if(pass) localStorage.setItem(PASS,pass); else localStorage.removeItem(PASS); }catch(e){} }
+/* Bookings, dates, the checklist and expenses. Only signed-in members can read or change them: the Firestore
+   rules list the allowed Google accounts. A copy is cached in this browser for offline use and cleared on sign-out. */
+/* Public web config (safe to publish); access is controlled by the Firestore rules */
+const FIREBASE={apiKey:'AIzaSyAFeuVW8rjwP5yDZ0iFIitZXzfXLb8T1N4',authDomain:'perth-trip.firebaseapp.com',projectId:'perth-trip',
+  appId:'1:289723686287:web:9dfe7ad6b65acf08003ffa',messagingSenderId:'289723686287'};
+const STORE='perth-trip-details';
+let details={}, user=null;
+try{ details=JSON.parse(localStorage.getItem(STORE))?.details||{}; }catch(e){}
+function cache(){ try{ if(user) localStorage.setItem(STORE,JSON.stringify({uid:user.uid,details})); else localStorage.removeItem(STORE); }catch(e){} }
 
-const utf8=new TextEncoder();
-const b64=buf=>{ let s=''; for(const b of new Uint8Array(buf)) s+=String.fromCharCode(b); return btoa(s); };
-const unb64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
-async function passKey(p){
-  const raw=await crypto.subtle.importKey('raw',utf8.encode(p),'PBKDF2',false,['deriveKey']);
-  const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:utf8.encode('perth-trip-v1'),iterations:200000,hash:'SHA-256'},raw,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
-  const h=new Uint8Array(await crypto.subtle.digest('SHA-256',utf8.encode('perth-trip-id:'+p)));
-  return {key,id:[...h.slice(0,16)].map(b=>b.toString(16).padStart(2,'0')).join('')};
-}
-const docUrl=id=>`https://firestore.googleapis.com/v1/projects/${FIREBASE.projectId}/databases/(default)/documents/trips/${id}`;
-async function pullTrip(c){
-  const r=await fetch(docUrl(c.id),{cache:'no-store'});
+const DOC=`https://firestore.googleapis.com/v1/projects/${FIREBASE.projectId}/databases/(default)/documents/trips/perth`;
+class Denied extends Error{}
+async function signed(opts={}){ const t=await tripAuth.token(); return {...opts,headers:{...opts.headers,Authorization:'Bearer '+t}}; }
+async function pullTrip(){
+  const r=await fetch(DOC,await signed({cache:'no-store'}));
   if(r.status===404) return null;
+  if(r.status===403) throw new Denied();
   if(!r.ok) throw new Error('read '+r.status);
-  const f=(await r.json()).fields;
-  const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(f.iv.stringValue)},c.key,unb64(f.data.stringValue));
-  return JSON.parse(new TextDecoder().decode(plain));
+  return JSON.parse((await r.json()).fields.data.stringValue);
 }
-async function pushTrip(c,d){
-  const iv=crypto.getRandomValues(new Uint8Array(12));
-  const data=await crypto.subtle.encrypt({name:'AES-GCM',iv},c.key,utf8.encode(JSON.stringify(d)));
-  const r=await fetch(docUrl(c.id),{method:'PATCH',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({fields:{iv:{stringValue:b64(iv)},data:{stringValue:b64(data)},updated:{integerValue:String(Date.now())}}})});
+async function pushTrip(d){
+  const r=await fetch(DOC,await signed({method:'PATCH',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({fields:{data:{stringValue:JSON.stringify(d)},updated:{integerValue:String(Date.now())}}})}));
+  if(r.status===403) throw new Denied();
   if(!r.ok) throw new Error('write '+r.status);
 }
 
 /* Each edit is a small function that sets values. It's applied locally straight away, then re-applied on top
    of the latest shared copy before writing, so two people editing different things don't overwrite each other. */
-let conn=null, pending=[], syncing=null;
+let pending=[], syncing=null;
 const setSync=t=>{ document.getElementById('sync').textContent=t; };
+const notice=t=>{ document.getElementById('notice').textContent=t; };
 function change(fn){ fn(details); cache(); pending.push(fn); sync(); }
 function sync(){
-  if(!conn) return Promise.resolve();
+  if(!user) return Promise.resolve();
   return syncing ||= (async()=>{
-    const c=conn, fns=pending; pending=[];
+    const who=user, fns=pending; pending=[];
     let failed=false;
     try{
-      const remote=await pullTrip(c);
+      const remote=await pullTrip();
       const d=remote ?? JSON.parse(JSON.stringify(details));
       fns.forEach(f=>f(d));
-      if(fns.length || !remote) await pushTrip(c,d);
-      if(c!==conn) return;
+      if(fns.length || !remote) await pushTrip(d);
+      if(who!==user) return;
       pending.forEach(f=>f(d));   // edits made while this sync was in flight; they go out on the next one
       const changed=JSON.stringify(d)!==JSON.stringify(details);
       details=d; cache();
@@ -605,14 +613,48 @@ function sync(){
       setSync('Shared, up to date');
     }catch(e){
       failed=true;
+      if(e instanceof Denied){ pending=[]; showDenied(who.email); tripAuth.signOut(); return; }
       pending=fns.concat(pending);
       setSync('Offline, showing the copy on this device');
     }finally{
       syncing=null;
-      if(pending.length && conn) setTimeout(sync,failed?5000:0);
+      if(pending.length && user) setTimeout(sync,failed?5000:0);
     }
   })();
 }
+
+function showDenied(email){
+  document.getElementById('dn-text').textContent=email
+    ? `${email} can see the itinerary, but not the bookings or expenses. Ask whoever set up the trip to add this email, or sign in with a different Google account.`
+    : 'This Google account has been blocked from the trip. You can still see the itinerary, or sign in with a different account.';
+  const dn=document.getElementById('denied'); if(!dn.open) dn.showModal();
+}
+document.getElementById('dn-ok').onclick=()=>document.getElementById('denied').close();
+
+/* Called by the sign-in module whenever the Google account changes (including on page load) */
+function onUser(u){
+  const was=user; user=u||null;
+  document.documentElement.classList.toggle('member',!!user);
+  if(!user){
+    const hadData=Object.keys(details).length>0;
+    details={}; pending=[]; cache(); setSync('');
+    if(was||hadData){ renderAll(); select(current===-2?-1:current); }
+    return;
+  }
+  notice('');
+  try{ const c=JSON.parse(localStorage.getItem(STORE)); if(c?.uid===user.uid) details=c.details||{}; else details={}; }catch(e){}
+  renderAll(); select(current); setSync('Connecting…');
+  sync().then(()=>{ ensureMe(); renderMoney(); const t=todayIndex(); if(t!==null && current===0) select(t); });
+}
+document.getElementById('signin').onclick=()=>{
+  if(!window.tripAuth){ notice("Sign-in isn't available right now. Check your internet connection."); return; }
+  notice('');
+  tripAuth.signIn().catch(e=>{
+    if(e.code==='auth/user-disabled') showDenied(null);
+    else if(!/popup-closed|cancelled-popup/.test(e.code||'')) notice(`Couldn't sign in (${e.code||e.message}).`);
+  });
+};
+
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const STAYS=[
   {key:'mr',town:'Margaret River',base:'Margaret River WA',days:[0,1,2,3,4],when:'Saturday to Wednesday'},
@@ -636,8 +678,9 @@ function todayIndex(){
 const pick=document.getElementById('daypick');
 const allBtn=document.createElement('button'); allBtn.textContent='Whole trip'; allBtn.dataset.view=-1;
 allBtn.onclick=()=>select(-1); pick.append(allBtn);
-const moneyBtn=document.createElement('button'); moneyBtn.textContent='Expenses'; moneyBtn.dataset.view=-2;
+const moneyBtn=document.createElement('button'); moneyBtn.textContent='Expenses'; moneyBtn.dataset.view=-2; moneyBtn.className='private money-tab';
 moneyBtn.onclick=()=>select(-2); pick.append(moneyBtn);
+const sep=document.createElement('span'); sep.className='sep private'; sep.setAttribute('aria-hidden','true'); pick.append(sep);
 const tabs=days.map((d,i)=>{const b=document.createElement('button'); b.dataset.view=i;
   b.onclick=()=>select(i); pick.append(b); return b});
 const mapsLink=id=>{const p=places[id];return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.q||p.name)};
@@ -690,7 +733,7 @@ function renderStays(){
 function renderTodo(){
   const done=details.done||{}, n=TODO.filter(([k])=>done[k]).length;
   const el=document.getElementById('todo');
-  el.innerHTML=`<h2 id="todo-h">To book</h2><p class="hint">${n} of ${TODO.length} done. ${conn?'Shared with your group.':'Ticks are saved in this browser only.'}</p><ul>${TODO.map(([k,label])=>`<li><label><input type="checkbox" data-todo="${k}"${done[k]?' checked':''}><span>${label}</span></label></li>`).join('')}</ul>`;
+  el.innerHTML=`<h2 id="todo-h">To book</h2><p class="hint">${n} of ${TODO.length} done. Shared with the group.</p><ul>${TODO.map(([k,label])=>`<li><label><input type="checkbox" data-todo="${k}"${done[k]?' checked':''}><span>${label}</span></label></li>`).join('')}</ul>`;
 }
 document.getElementById('todo').addEventListener('change',e=>{
   const k=e.target.dataset.todo; if(!k) return;
@@ -704,7 +747,7 @@ const ed=document.getElementById('editor'), form=document.getElementById('edform
 document.getElementById('f-stays').innerHTML=STAYS.map(st=>`<fieldset id="f-${st.key}"><legend>Staying in ${st.town}</legend>
   <label>Name<input name="${st.key}.name" autocomplete="off"></label>
   <label>Address<input name="${st.key}.address" autocomplete="off"></label>
-  <div class="pair"><label>Check-in<input name="${st.key}.checkin" placeholder="3:00 pm" autocomplete="off"></label><label>Booking ref<input name="${st.key}.ref" autocomplete="off"></label></div>
+  <div class="pair"><label>Check-in<input name="${st.key}.checkin" placeholder="e.g. 3:00 pm" autocomplete="off"></label><label>Booking ref<input name="${st.key}.ref" autocomplete="off"></label></div>
   <label>Notes (door code, wifi, host number)<input name="${st.key}.notes" autocomplete="off"></label>
 </fieldset>`).join('');
 function fillForm(){
@@ -712,69 +755,64 @@ function fillForm(){
   const h=details.home||{};
   form.elements['home.flight'].value=h.flight||''; form.elements['home.arr'].value=h.arr||'';
   STAYS.forEach(st=>STAYFIELDS.forEach(([f])=>form.elements[`${st.key}.${f}`].value=stay(st.key)[f]||''));
-  document.getElementById('share').innerHTML=`<p class="hint">Everyone opens the site with the same trip passphrase. This link fills it in for them, so keep it to your group chat.</p>
-    <div class="join"><input readonly value="${esc(inviteLink())}" aria-label="Invite link" id="share-link"><button class="btn" type="button" id="copy">Copy link</button></div>
-    <button class="link" type="button" id="leave">Lock this device</button>`;
-  document.getElementById('ed-hint').textContent='Shared with everyone who has the trip passphrase, and encrypted before it leaves this browser.';
+  document.getElementById('acct').textContent=user?`Signed in as ${user.email}.`:'';
+  document.getElementById('ed-hint').textContent='Only people on the trip list can see these details.';
 }
 function openEditor(section){
-  fillForm(); document.getElementById('share-msg').textContent='';
+  fillForm(); document.getElementById('start-msg').textContent='';
   ed.showModal();
   const fs=document.getElementById('f-'+(section||'start'));
   fs.scrollIntoView({block:'nearest'}); fs.querySelector('input').focus();
 }
 document.addEventListener('click',e=>{ const b=e.target.closest('[data-edit]'); if(b) openEditor(b.dataset.edit); });
 document.getElementById('ed-cancel').onclick=()=>ed.close();
-form.addEventListener('submit',()=>{
+form.addEventListener('submit',ev=>{
   const val=n=>form.elements[n].value.trim();
+  if(val('start')){
+    const [y,m,d]=val('start').split('-').map(Number), dt=new Date(y,m-1,d);
+    if(dt.getDay()!==6){
+      ev.preventDefault();
+      document.getElementById('start-msg').textContent=`That's a ${dt.toLocaleDateString('en-AU',{weekday:'long'})}. Pick the Saturday you fly in.`;
+      form.elements.start.focus(); return;
+    }
+  }
   const start=val('start'), home={flight:val('home.flight'),arr:val('home.arr')}, stays={};
   STAYS.forEach(st=>{ stays[st.key]={}; STAYFIELDS.forEach(([f])=>stays[st.key][f]=val(`${st.key}.${f}`)); });
   change(d=>{ d.start=start; d.home=home; d.stays=stays; });
   renderAll(); select(current);
 });
-const inviteLink=()=>location.origin+location.pathname+'#trip='+encodeURIComponent(pass);
-document.getElementById('share').addEventListener('click',async e=>{
-  const msg=document.getElementById('share-msg');
-  if(e.target.id==='copy'){
-    const box=document.getElementById('share-link');
-    try{ await navigator.clipboard.writeText(box.value); msg.textContent='Link copied.'; }
-    catch(err){ box.select(); msg.textContent='Press and hold (or Ctrl+C) to copy the selected link.'; }
-  }else if(e.target.id==='leave'){
-    try{ localStorage.removeItem(STORE); localStorage.removeItem(PASS); }catch(err){}
-    location.replace(location.pathname);
-  }
-});
+document.getElementById('signout').onclick=()=>{ ed.close(); tripAuth.signOut(); };
 
-/* Passphrase gate. A passphrase that matches no trip is refused, so a typo can't quietly start an empty one */
-const gate=document.getElementById('gateform'), gateMsg=document.getElementById('gatemsg'), gateCreate=document.getElementById('gatecreate');
-async function unlock(p,create){
-  const c=await passKey(p), remote=await pullTrip(c);
-  if(!remote && !create) return false;
-  if(remote) details=remote; else await pushTrip(c,details);
-  conn=c; pass=p; pending=[]; cache();
-  document.documentElement.classList.remove('locked');
-  map.resize(); renderAll(); select(todayIndex() ?? 0); setSync('Shared, up to date');
-  return true;
-}
-async function tryGate(create){
-  const p=gate.elements.p.value.trim(); if(!p) return;
-  gateCreate.hidden=true; gateMsg.textContent=create?'Creating…':'Checking…';
-  try{
-    if(await unlock(p,create)) return;
-    gateMsg.textContent="That passphrase doesn't match a trip. Check the spelling with your group.";
-    if(p.length>=8) gateCreate.hidden=false; else gateMsg.textContent+=' New trips need at least 8 characters.';
-  }catch(err){ gateMsg.textContent="Couldn't reach the server. Check your internet connection and try again."; }
-}
-gate.addEventListener('submit',e=>{ e.preventDefault(); tryGate(false); });
-gateCreate.onclick=()=>tryGate(true);
-
-/* Expenses, Splitwise-style. Stored with the bookings (encrypted, shared). Amounts are in cents, and
+/* Expenses, Splitwise-style. Stored with the bookings (members only). Amounts are in cents, and
    people and expenses are keyed by id so additions from different phones merge instead of overwriting. */
 const CURS={AUD:'A$',SGD:'S$'};
 const money=(c,cur)=>CURS[cur]+(c/100).toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2});
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 const people=()=>Object.entries(details.people||{}).sort((a,b)=>a[1].at-b[1].at);
 const pname=id=>(details.people||{})[id]?.name||'Someone';
+/* People are the trip members: each signed-in Google account becomes one. Someone added by hand (name + Gmail)
+   is matched to their account by email when they first sign in, so nobody appears twice. */
+function myId(){
+  if(!user) return null;
+  const ps=details.people||{}, em=(user.email||'').toLowerCase();
+  return Object.keys(ps).find(k=>ps[k].uid===user.uid) || Object.keys(ps).find(k=>ps[k].email===em) || null;
+}
+function ensureMe(){
+  if(!user) return;
+  const ps=details.people||{}, mine=myId();
+  if(mine && ps[mine].uid===user.uid) return;
+  const uidv=user.uid, email=(user.email||'').toLowerCase(), full=user.displayName||email.split('@')[0];
+  const first=full.split(' ')[0], newId=uid(), at=Date.now();
+  change(d=>{
+    const ps=d.people||{};
+    if(Object.values(ps).some(p=>p.uid===uidv)) return;
+    const k=Object.keys(ps).find(k=>ps[k].email===email) || newId;
+    const taken=Object.entries(ps).some(([id,p])=>id!==k && p.name.toLowerCase()===first.toLowerCase());
+    d.people={...ps,[k]:{...ps[k],name:ps[k]?.name||(taken?full:first),email,uid:uidv,at:ps[k]?.at||at}};
+  });
+}
+/* "You" for the signed-in person, their name for everyone else */
+const who=(id,cap)=>id===myId()?(cap?'You':'you'):esc(pname(id));
 const expenses=()=>Object.entries(details.expenses||{}).sort((a,b)=>b[1].at-a[1].at);
 const usedBy=id=>Object.values(details.expenses||{}).some(e=>e.by===id||e.split.includes(id));
 function shares(e){ // equal split; leftover cents go to the first people listed
@@ -791,9 +829,12 @@ function balances(){ // per currency: positive means they're owed money
   });
   return out;
 }
-function settleUp(b){ // largest debt to largest credit, repeated: at most n-1 payments
-  const debt=Object.entries(b).filter(([,v])=>v<0).map(([p,v])=>[p,-v]).sort((x,y)=>y[1]-x[1]);
-  const cred=Object.entries(b).filter(([,v])=>v>0).sort((x,y)=>y[1]-x[1]);
+/* Fewest possible payments. Split everyone who owes or is owed into as many groups as possible whose balances
+   cancel out exactly (an exact search over subsets, instant for a trip-sized group); a group of g people then
+   settles in g-1 payments, which is the minimum. Very large groups fall back to plain largest-first pairing. */
+function pairUp(b,ids){ // largest debt to largest credit, repeated
+  const debt=ids.filter(p=>b[p]<0).map(p=>[p,-b[p]]).sort((x,y)=>y[1]-x[1]);
+  const cred=ids.filter(p=>b[p]>0).map(p=>[p,b[p]]).sort((x,y)=>y[1]-x[1]);
   const out=[];
   while(debt.length && cred.length){
     const d=debt[0], c=cred[0], amt=Math.min(d[1],c[1]);
@@ -802,37 +843,94 @@ function settleUp(b){ // largest debt to largest credit, repeated: at most n-1 p
   }
   return out;
 }
+function settleUp(b){
+  const ids=Object.keys(b).filter(k=>b[k]), n=ids.length;
+  if(n<2) return [];
+  if(details.settle==='greedy' || n>16) return pairUp(b,ids);
+  const full=(1<<n)-1, sum=new Array(full+1).fill(0), best=new Int8Array(full+1), next=new Int8Array(full+1);
+  for(let m=1;m<=full;m++){ const i=31-Math.clz32(m&-m); sum[m]=sum[m&(m-1)]+b[ids[i]]; }
+  // best[m] = most zero-sum subsets on a chain of removals from m down to nothing
+  for(let m=1;m<=full;m++){
+    let top=-1, pick=0;
+    for(let i=0;i<n;i++) if(m>>i&1){ const v=best[m^(1<<i)]; if(v>top){ top=v; pick=i; } }
+    best[m]=top+(sum[m]===0?1:0); next[m]=pick;
+  }
+  const out=[]; let m=full, group=[];
+  while(m){
+    const i=next[m]; group.push(ids[i]); m^=1<<i;
+    if(sum[m]===0){ out.push(...pairUp(b,group)); group=[]; }
+  }
+  return out;
+}
+function quickAdd(){ if(people().length<2){ select(-2); scrollTo(0,0); } else openExpense(''); }
+document.getElementById('fab').onclick=quickAdd;
+document.getElementById('spend').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  if(b.dataset.q==='add') quickAdd(); else { select(-2); scrollTo(0,0); }
+});
+/* Your part of the settle-up plan, per person, e.g. "You owe S$20.00 to Chris and S$15.00 + A$30.00 to Lamont" */
+function myPosition(bal){
+  const me=myId(), owe={}, owed={};
+  Object.entries(bal).forEach(([cur,b])=>settleUp(b).forEach(([f,t,a])=>{
+    if(f===me) (owe[t]||={})[cur]=a;
+    if(t===me) (owed[f]||={})[cur]=a;
+  }));
+  const amt=m=>Object.entries(m).sort(([x],[y])=>y.localeCompare(x)).map(([cur,a])=>money(a,cur)).join(' + ');
+  const and=xs=>xs.length<2?xs.join(''):xs.slice(0,-1).join(', ')+' and '+xs[xs.length-1];
+  const out=[];
+  if(Object.keys(owe).length) out.push('You owe '+and(Object.entries(owe).map(([id,m])=>`${amt(m)} to ${esc(pname(id))}`)));
+  if(Object.keys(owed).length) out.push(and(Object.entries(owed).map(([id,m])=>`${esc(pname(id))} owes you ${amt(m)}`)));
+  return out.join('. ') || "You're all square";
+}
 function renderMoney(){
-  const ps=people(), ex=expenses(), bal=balances(), totals={};
+  const ps=people(), ex=expenses(), bal=balances(), totals={}, me=myId();
   ex.forEach(([,e])=>{ if(!e.settle) totals[e.cur]=(totals[e.cur]||0)+e.amount; });
-  const typing=document.querySelector('#addp input'), draft=typing?.value||'', hadFocus=typing&&document.activeElement===typing;
-  const splitText=e=>e.split.length===ps.length?'split between everyone':'split with '+e.split.map(pname).map(esc).join(', ');
+  const spent=Object.entries(totals).map(([cur,c])=>money(c,cur)).join(' + ');
+  document.getElementById('spend').innerHTML=ps.length<2
+    ? `<div><span class="lbl">Expenses</span>Split costs with the group. Everyone appears here once they sign in.</div><button class="btn primary" type="button" data-q="bal">Open</button>`
+    : `<div><span class="lbl">Expenses</span><span class="sum">${myPosition(bal)}</span><br><span class="hint">${spent||money(0,'AUD')} spent by the group</span></div>
+       <div class="go2"><button class="link" type="button" data-q="bal">Balances</button><button class="btn primary" type="button" data-q="add">Add expense</button></div>`;
+  const form=document.getElementById('addp'), wasOpen=document.getElementById('addwrap')?.open;
+  const draft=form?[form.elements.n.value,form.elements.e.value]:['',''];
+  const splitText=e=>e.split.length===ps.length?'split between everyone':'split with '+e.split.map(id=>who(id)).join(', ');
+  const verb=(id,one,other)=>id===me?other:one;
   document.getElementById('money').innerHTML=`<h2>Expenses</h2>
+    ${ps.length>=2?`<div class="spend mine"><div><span class="lbl">Your balance</span><span class="sum">${myPosition(bal)}</span></div><button class="btn primary" type="button" data-expense="">Add an expense</button></div>`:''}
     <div class="card"><h3>People</h3>
-      <ul class="chips">${ps.map(([id,p])=>`<li>${esc(p.name)}${usedBy(id)?'':`<button class="x" type="button" data-rmperson="${id}" aria-label="Remove ${esc(p.name)}">&times;</button>`}</li>`).join('')}</ul>
-      <form class="addp" id="addp"><input name="n" placeholder="Add a name" autocomplete="off" aria-label="Name"><button class="btn" type="submit">Add</button></form>
+      <ul class="chips">${ps.map(([id,p])=>`<li>${esc(p.name)}${id===me?' <span class="hint">(you)</span>':''}${!p.uid?' <span class="hint">(not signed in yet)</span>':''}${usedBy(id)||id===me?'':`<button class="x" type="button" data-rmperson="${id}" aria-label="Remove ${esc(p.name)}">&times;</button>`}</li>`).join('')}</ul>
+      <details id="addwrap"${wasOpen?' open':''}><summary class="link">Add someone who hasn't signed in yet</summary>
+        <form class="addp" id="addp"><input name="n" placeholder="Name" autocomplete="off" aria-label="Name" required><input name="e" type="email" placeholder="Their Gmail (optional)" autocomplete="off" aria-label="Their Gmail"><button class="btn" type="submit">Add</button></form>
+      </details>
     </div>
-    ${ps.length<2?'<p class="hint">Add at least two people to start splitting.</p>':'<button class="btn primary" type="button" data-expense="">Add an expense</button>'}
+    ${ps.length<2?'<p class="hint">Everyone on the trip list shows up here once they sign in. Two people are needed to start splitting.</p>':''}
+    ${Object.keys(bal).length?`<div class="mode" role="radiogroup" aria-label="Settle-up plan"><span class="hint">Settle-up plan</span>
+      <label class="chk"><input type="radio" name="settle" value="exact"${details.settle!=='greedy'?' checked':''}><span>Fewest payments (exact)</span></label>
+      <label class="chk"><input type="radio" name="settle" value="greedy"${details.settle==='greedy'?' checked':''}><span>Largest first (greedy)</span></label></div>`:''}
     ${Object.entries(bal).map(([cur,b])=>{
       const owed=ps.filter(([id])=>b[id]), moves=settleUp(b);
       return `<div class="card"><h3>${cur==='AUD'?'Australian dollars':'Singapore dollars'}</h3><p class="hint">${money(totals[cur]||0,cur)} spent</p>
-        <ul class="bals">${owed.length?owed.map(([id,p])=>`<li><span>${esc(p.name)}</span><span class="${b[id]>0?'pos':'neg'}">${b[id]>0?'gets back':'owes'} ${money(Math.abs(b[id]),cur)}</span></li>`).join(''):'<li>All square.</li>'}</ul>
-        ${moves.length?`<h4>To settle up</h4><ul class="moves">${moves.map(([f,t,a])=>`<li><span>${esc(pname(f))} pays ${esc(pname(t))} <b>${money(a,cur)}</b></span><button class="link" type="button" data-settle="${f}|${t}|${a}|${cur}">Mark paid</button></li>`).join('')}</ul>`:''}
+        <ul class="bals">${owed.length?owed.map(([id])=>`<li><span>${who(id,true)}</span><span class="${b[id]>0?'pos':'neg'}">${b[id]>0?verb(id,'gets back','get back'):verb(id,'owes','owe')} ${money(Math.abs(b[id]),cur)}</span></li>`).join(''):'<li>All square.</li>'}</ul>
+        ${moves.length?`<h4>To settle up</h4><ul class="moves">${moves.map(([f,t,a])=>`<li><span>${who(f,true)} ${verb(f,'pays','pay')} ${who(t)} <b>${money(a,cur)}</b></span><button class="link" type="button" data-settle="${f}|${t}|${a}|${cur}">Mark paid</button></li>`).join('')}</ul>`:''}
       </div>`;}).join('')}
     ${ex.length?`<ul class="exp">${ex.map(([id,e])=>`<li><button type="button" data-expense="${id}">
-      <span>${e.settle?`${esc(pname(e.by))} paid ${esc(pname(e.split[0]))}`:esc(e.what)}</span><span class="amt">${money(e.amount,e.cur)}</span>
-      <span class="sub">${e.settle?'Settle-up':`Paid by ${esc(pname(e.by))}, ${splitText(e)}`} &middot; ${new Date(e.at).toLocaleDateString('en-AU',{day:'numeric',month:'short'})}</span>
+      <span>${e.settle?`${who(e.by,true)} paid ${who(e.split[0])}`:esc(e.what)}</span><span class="amt">${money(e.amount,e.cur)}</span>
+      <span class="sub">${e.settle?'Settle-up':`Paid by ${who(e.by)}, ${splitText(e)}`} &middot; ${new Date(e.at).toLocaleDateString('en-AU',{day:'numeric',month:'short'})}</span>
     </button></li>`).join('')}</ul>`:''}`;
-  const box=document.querySelector('#addp input'); box.value=draft; if(hadFocus) box.focus();
+  const f2=document.getElementById('addp'); f2.elements.n.value=draft[0]; f2.elements.e.value=draft[1];
 }
 const moneyEl=document.getElementById('money');
+moneyEl.addEventListener('change',e=>{
+  if(e.target.name!=='settle') return;
+  const mode=e.target.value; change(d=>{ d.settle=mode; }); renderMoney();
+});
 moneyEl.addEventListener('submit',e=>{
   e.preventDefault();
-  const name=e.target.elements.n.value.trim(); if(!name) return;
-  if(people().some(([,p])=>p.name.toLowerCase()===name.toLowerCase())){ e.target.elements.n.value=''; return; }
+  const name=e.target.elements.n.value.trim(), email=e.target.elements.e.value.trim().toLowerCase(); if(!name) return;
+  const ps=people();
+  if(ps.some(([,p])=>p.name.toLowerCase()===name.toLowerCase() || (email && p.email===email))){ e.target.elements.n.value=''; e.target.elements.e.value=''; return; }
   const id=uid(), at=Date.now();
-  change(d=>{ d.people={...d.people,[id]:{name,at}}; }); renderMoney();
-  document.querySelector('#addp input').focus();
+  change(d=>{ d.people={...d.people,[id]:{name,at,...(email?{email}:{})}}; });
+  e.target.elements.n.value=''; e.target.elements.e.value=''; renderMoney();
 });
 moneyEl.addEventListener('click',e=>{
   const b=e.target.closest('button'); if(!b) return;
@@ -846,18 +944,18 @@ moneyEl.addEventListener('click',e=>{
 });
 
 const xed=document.getElementById('xed'), xform=document.getElementById('xform'), xmsg=document.getElementById('xmsg');
-const ME='perth-trip-me';
+const LASTCUR='perth-trip-cur';
 let editing=null;
 function openExpense(id){
   editing=id||null;
   const e=editing?details.expenses[editing]:null, ps=people();
-  let me=null, cur='AUD'; try{ [me,cur]=JSON.parse(localStorage.getItem(ME))||[null,'AUD']; }catch(err){}
+  let cur='AUD'; try{ cur=localStorage.getItem(LASTCUR)||'AUD'; }catch(err){}
   document.getElementById('xed-title').textContent=e?(e.settle?'Settle-up':'Edit expense'):'Add an expense';
   xform.elements.what.value=e?e.what:'';
   xform.elements.amount.value=e?(e.amount/100).toFixed(2):'';
   xform.elements.cur.value=e?e.cur:cur;
-  xform.elements.by.innerHTML=ps.map(([pid,p])=>`<option value="${pid}">${esc(p.name)}</option>`).join('');
-  xform.elements.by.value=e?e.by:((details.people||{})[me]?me:ps[0][0]);
+  xform.elements.by.innerHTML=ps.map(([pid,p])=>`<option value="${pid}">${esc(p.name)}${pid===myId()?' (you)':''}</option>`).join('');
+  xform.elements.by.value=e?e.by:(myId()||ps[0][0]);
   document.getElementById('xsplit').innerHTML=ps.map(([pid,p])=>`<label class="chk"><input type="checkbox" value="${pid}"${!e||e.split.includes(pid)?' checked':''}><span>${esc(p.name)}</span></label>`).join('');
   document.getElementById('xdel').hidden=!e; xmsg.textContent='';
   xed.showModal();
@@ -871,7 +969,7 @@ xform.addEventListener('submit',ev=>{
   const id=editing||uid(), old=editing?details.expenses[editing]:null;
   const x={what:xform.elements.what.value.trim(),amount,cur:xform.elements.cur.value,by:xform.elements.by.value,split,at:old?old.at:Date.now()};
   if(old?.settle) x.settle=true;
-  try{ localStorage.setItem(ME,JSON.stringify([x.by,x.cur])); }catch(err){}
+  try{ localStorage.setItem(LASTCUR,x.cur); }catch(err){}
   change(d=>{ d.expenses={...d.expenses,[id]:x}; }); renderMoney();
 });
 document.getElementById('xcancel').onclick=()=>xed.close();
@@ -885,7 +983,7 @@ function select(i){
   current=i;
   document.querySelectorAll('#daypick button').forEach(b=>{ const on=+b.dataset.view===i; b.setAttribute('aria-pressed',on); if(on) pick.scrollTo({left:b.offsetLeft-pick.clientWidth/2+b.offsetWidth/2,behavior:'smooth'}); });
   const layout=document.querySelector('.layout'), wasMoney=layout.classList.contains('money');
-  layout.classList.toggle('money',i===-2);
+  layout.classList.toggle('money',i===-2); document.documentElement.classList.toggle('view-money',i===-2);
   if(i!==-2){ if(wasMoney) map.resize(); highlight(i); }
   document.querySelectorAll('.day').forEach((el,j)=>el.hidden = !(i===-1 || j===i));
   document.getElementById('days').classList.toggle('single', i!==-1);
@@ -895,19 +993,23 @@ function select(i){
 function renderAll(){ renderDays(); renderStays(); renderTodo(); renderMoney(); }
 renderAll();
 select(todayIndex() ?? 0);
-/* An invite link (#trip=passphrase) fills in the gate; the passphrase is then remembered and dropped from the URL */
-const linkPass=decodeURIComponent((location.hash.match(/trip=([^&]+)/)||[])[1]||'');
-if(linkPass) history.replaceState(null,'',location.pathname);
-if(linkPass && linkPass!==pass){
-  document.documentElement.classList.add('locked');
-  gate.elements.p.value=linkPass; tryGate(false);
-}else if(pass){
-  setSync('Connecting…');
-  passKey(pass).then(c=>{ conn=c; return sync(); }).then(()=>{ const t=todayIndex(); if(t!==null && current===0) select(t); });
-}
 setInterval(()=>{ if(!document.hidden) sync(); },30000);
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden) sync(); });
+</script>
+<script type="module">
+/* Google sign-in (Firebase Auth). The Firestore rules decide which accounts can read or change trip data. */
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import {getAuth,GoogleAuthProvider,signInWithPopup,signOut,onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+if(FIREBASE.apiKey){
+  const auth=getAuth(initializeApp(FIREBASE));
+  window.tripAuth={
+    signIn:()=>signInWithPopup(auth,new GoogleAuthProvider()),
+    signOut:()=>signOut(auth),
+    token:()=>auth.currentUser.getIdToken()
+  };
+  onAuthStateChanged(auth,onUser);
+}else onUser(null);
 </script>
 </body>
 </html>
