@@ -140,6 +140,14 @@ ol.stops li{display:grid;grid-template-columns:5.5rem 1fr;gap:.25rem 1rem;paddin
 .stays{display:grid;gap:.75rem;margin:0 0 1.5rem}
 .stayname{font-family:var(--head);font-weight:700;font-size:1.2rem;line-height:1.2;margin:0}
 .stay .ap{display:block;margin:.1rem 0 0}
+.stay summary{list-style:none;cursor:pointer;display:flex;align-items:baseline;flex-wrap:wrap;gap:.1rem .6rem}
+.stay summary::-webkit-details-marker{display:none}
+.stay summary::after{content:"\203A";margin-left:auto;font-family:var(--head);font-size:1.3rem;line-height:1;color:var(--muted);transition:transform .2s}
+.stay details[open] summary::after{transform:rotate(90deg)}
+.stay details[open] summary{margin-bottom:.5rem}
+.stay summary .leg{margin:0}
+.stay .peek{font-family:var(--head);font-weight:700;font-size:.95rem}
+.stay details[open] .peek{display:none}
 .stay .note{color:var(--muted);font-size:1rem;margin:.35rem 0 0}
 .stay .acts{display:flex;gap:1rem;margin:.6rem 0 0}
 .stay .acts a{font-family:var(--head);font-size:.85rem;color:var(--gum);text-underline-offset:3px}
@@ -709,27 +717,32 @@ function renderDays(){
     box.append(s);
   });
 }
+/* On phones the stays start folded to one line so the day's plan comes first; tapping opens the details */
+const stayOpen={};
+const wide=matchMedia('(min-width:900px)');
 function renderStays(){
   const el=document.getElementById('stays'); el.innerHTML='';
   STAYS.forEach(st=>{
     const v=stay(st.key), has=STAYFIELDS.some(([f])=>v[f]);
     const q=v.address||(v.name?v.name+' '+st.town:'');
     const meta=[v.checkin&&'Check-in '+esc(v.checkin), v.ref&&'Ref '+esc(v.ref)].filter(Boolean).join(' &middot; ');
-    el.insertAdjacentHTML('beforeend',`<article class="flight stay" data-day="${st.days.join(',')}">
-      <p class="leg"><b>Staying</b> ${st.town}, ${st.when}</p>
+    const open=stayOpen[st.key] ?? wide.matches;
+    el.insertAdjacentHTML('beforeend',`<article class="flight stay" data-day="${st.days.join(',')}"><details data-stay="${st.key}"${open?' open':''}>
+      <summary><span class="leg"><b>Staying</b> ${st.town}, ${st.when}</span>${v.name?`<span class="peek">${esc(v.name)}</span>`:''}</summary>
       ${v.name?`<p class="stayname">${esc(v.name)}</p>`:''}
       ${v.address?`<span class="ap">${esc(v.address)}</span>`:''}
       ${has?'':'<span class="ap">No booking details yet.</span>'}
       ${meta?`<p class="meta">${meta}</p>`:''}
       ${v.notes?`<p class="note">${esc(v.notes)}</p>`:''}
       <p class="acts">${q?`<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}" target="_blank" rel="noopener">Open in Maps</a>`:''}<button class="link" type="button" data-edit="${st.key}">${has?'Edit':'Add details'}</button></p>
-    </article>`);
+    </details></article>`);
   });
   const h=details.home||{};
   document.getElementById('home-flight').textContent=h.flight?'Scoot '+h.flight.replace(/^scoot\s*/i,''):'Scoot, flight number to confirm';
   const arr=document.getElementById('home-arr');
   arr.textContent=h.arr||'To confirm'; arr.classList.toggle('tbc',!h.arr);
 }
+document.getElementById('stays').addEventListener('toggle',e=>{ const k=e.target.dataset?.stay; if(k) stayOpen[k]=e.target.open; },true);
 function renderTodo(){
   const done=details.done||{}, n=TODO.filter(([k])=>done[k]).length;
   const el=document.getElementById('todo');
@@ -988,6 +1001,12 @@ function select(i){
   document.querySelectorAll('.day').forEach((el,j)=>el.hidden = !(i===-1 || j===i));
   document.getElementById('days').classList.toggle('single', i!==-1);
   document.querySelectorAll('[data-day]').forEach(el=>{const ds=el.dataset.day.split(',').map(Number); el.hidden = ds.includes(-1) ? i!==-1 : !(i===-1 || ds.includes(i))});
+  const t=todayIndex();
+  if(t!==null){ // during the trip: flying in only on arrival day, flying home from the second-last day
+    const [flyIn,flyOut]=document.querySelectorAll('.flights .flight');
+    flyIn.hidden=!(t===0 && (i===-1 || i===0));
+    flyOut.hidden=!(t>=days.length-2 && i!==-2);
+  }
   const fl=document.querySelector('.flights'); fl.hidden=[...fl.children].every(c=>c.hidden);
 }
 function renderAll(){ renderDays(); renderStays(); renderTodo(); renderMoney(); }
