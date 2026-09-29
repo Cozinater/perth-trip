@@ -70,7 +70,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--sun);outline-offset
   .layout{grid-template-columns:minmax(0,1.5fr) minmax(360px,460px);gap:2.5rem;align-items:start;padding-top:1.25rem}
   .mapcol{position:sticky;top:calc(env(safe-area-inset-top,0px) + 4.25rem);height:calc(100vh - 10.5rem);display:flex;flex-direction:column}
   .mapcol .mapframe{flex:1;height:auto;min-height:0}
-  .layout.money{grid-template-columns:minmax(0,640px)}
+  .layout.full{grid-template-columns:minmax(0,640px)}
 }
 .panel .flights{margin-bottom:1.5rem}
 [hidden]{display:none !important}
@@ -155,7 +155,7 @@ ol.stops li{display:grid;grid-template-columns:5.5rem 1fr;gap:.25rem 1rem;paddin
 .todo h2{font-family:var(--head);font-size:1.15rem;margin:0}
 .todo ul{list-style:none;margin:.5rem 0 0;padding:0}
 .todo label{display:flex;gap:.6rem;align-items:baseline;padding:.25rem 0;cursor:pointer}
-.todo input{accent-color:var(--gum);width:1.05rem;height:1.05rem;flex:0 0 auto;transform:translateY(.12em)}
+.todo input[type=checkbox]{accent-color:var(--gum);width:1.05rem;height:1.05rem;flex:0 0 auto;transform:translateY(.12em)}
 .todo input:checked + span{color:var(--muted);text-decoration:line-through}
 .hint{color:var(--muted);font-size:.95rem;margin:.2rem 0 0}
 dialog{border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--ink);padding:1.25rem;width:min(520px,calc(100vw - 2rem));max-height:calc(100dvh - 2rem)}
@@ -165,7 +165,7 @@ dialog .hint{margin-bottom:.75rem}
 fieldset{border:0;border-top:1px solid var(--line);margin:0;padding:.8rem 0 .9rem;display:grid;gap:.6rem;min-width:0}
 legend{font-family:var(--head);font-weight:700;padding:.8rem 0 0;float:left;width:100%}
 dialog label{display:grid;gap:.2rem;font-family:var(--head);font-size:.85rem;color:var(--muted)}
-dialog input,dialog select,.money input{font-family:var(--body);font-size:1rem;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:.45rem .6rem;width:100%;min-width:0}
+dialog input,dialog select,.money input,.addtodo input{font-family:var(--body);font-size:1rem;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:.45rem .6rem;width:100%;min-width:0}
 .pair{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
 .top .side{display:flex;align-items:center;gap:.75rem}
 .sync{font-family:var(--head);font-size:.85rem;color:var(--muted)}
@@ -175,6 +175,11 @@ dialog .acts .grow{flex:1}
 
 .notice{font-family:var(--head);font-size:.9rem;color:var(--muted);margin:0 0 .5rem}
 .notice:empty{display:none}
+.tag{display:inline-block;font-family:var(--head);font-size:.72rem;font-weight:700;color:var(--suntext);border:1px solid var(--sun);border-radius:999px;padding:.05rem .5rem;margin-left:.35rem;vertical-align:.1em}
+#daypick .count{display:inline-block;min-width:1.25rem;font-size:.75rem;font-weight:700;line-height:1.25rem;border-radius:999px;background:var(--sun);color:#12324A;margin-left:.25rem}
+.todo li{display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+.todo .x{background:none;border:0;color:var(--muted);font-size:1.2rem;line-height:1;cursor:pointer;padding:.25rem .45rem}
+.addtodo{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.5rem;margin-top:.75rem}
 #start-msg:empty{display:none}
 #start-msg{color:var(--danger)}
 #daypick .money-tab{border-color:var(--sun);color:var(--suntext);font-weight:700}
@@ -184,16 +189,16 @@ dialog .acts .grow{flex:1}
 .spend .lbl{display:block;font-family:var(--head);font-size:.85rem;color:var(--suntext);font-weight:700}
 .spend .sum{font-family:var(--head);font-weight:700;font-size:1.25rem;font-variant-numeric:tabular-nums}
 .spend .go2{display:flex;align-items:center;gap:1rem}
-html.view-money .spend{display:none}
+html.view-full .spend{display:none}
 .fab{display:none}
 @media (max-width:899px){
-  html.member:not(.view-money) .fab{display:inline-flex;align-items:center;gap:.35rem;position:fixed;right:1rem;bottom:calc(1rem + env(safe-area-inset-bottom,0px));z-index:20;
+  html.member:not(.view-full) .fab{display:inline-flex;align-items:center;gap:.35rem;position:fixed;right:1rem;bottom:calc(1rem + env(safe-area-inset-bottom,0px));z-index:20;
     font-family:var(--head);font-weight:700;font-size:1rem;background:var(--sun);color:#12324A;border:0;border-radius:999px;padding:.8rem 1.15rem;box-shadow:0 4px 14px rgba(0,0,0,.3);cursor:pointer}
 }
 html:not(.member) .private{display:none !important}
 html.member .guest{display:none !important}
 
-.layout.money .mapcol{display:none}
+.layout.full .mapcol{display:none}
 .money h2{font-family:var(--head);font-weight:700;font-size:1.7rem;line-height:1.1;margin:0 0 1rem}
 .money .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:.9rem 1rem;margin:0 0 1rem}
 .money h3{font-family:var(--head);font-size:1.05rem;margin:0}
@@ -250,7 +255,7 @@ dialog .acts{display:flex;justify-content:flex-end;gap:.5rem;padding-top:.75rem;
           <div class="path"><span class="dur">5 hr 10 min</span><span class="rule"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg></span><span class="dur">Nonstop</span></div>
           <div class="end r"><span class="code">PER</span><span class="tm">5:10 pm</span><span class="ap">Perth Airport</span></div>
         </div>
-        <p class="meta">Scoot TR 8</p>
+        <p class="meta">Scoot TR 8 <span class="tag private" id="in-tag">Not booked yet</span></p>
       </article>
       <article class="flight" data-day="6">
         <p class="leg"><b>Flying home</b> Friday</p>
@@ -259,12 +264,12 @@ dialog .acts{display:flex;justify-content:flex-end;gap:.5rem;padding-top:.75rem;
           <div class="path"><span class="dur">&nbsp;</span><span class="rule"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg></span><span class="dur">Nonstop</span></div>
           <div class="end r"><span class="code">SIN</span><span class="tm tbc" id="home-arr">To confirm</span><span class="ap">Changi</span></div>
         </div>
-        <p class="meta"><span id="home-flight">Scoot, flight number to confirm</span> <button class="link private" type="button" data-edit="home">Edit</button></p>
+        <p class="meta"><span id="home-flight">Scoot, flight number to confirm</span> <span class="tag private" id="home-tag">Not booked yet</span> <button class="link private" type="button" data-edit="home">Edit</button></p>
       </article>
     </div>
     <div class="stays private" id="stays"></div>
     <p class="drive" data-day="-1">About 900 km of driving, all in one rental car.</p>
-    <section class="todo private" id="todo" data-day="-1" aria-labelledby="todo-h"></section>
+    <section class="todo private" id="todo" data-day="-3" aria-labelledby="todo-h"></section>
       <section id="days"></section>
     <section class="money private" id="money" data-day="-2" aria-label="Expenses"></section>
     </div>
@@ -646,7 +651,7 @@ function onUser(u){
   if(!user){
     const hadData=Object.keys(details).length>0;
     details={}; pending=[]; cache(); setSync('');
-    if(was||hadData){ renderAll(); select(current===-2?-1:current); }
+    if(was||hadData){ renderAll(); select(current<=-2?-1:current); }
     return;
   }
   notice('');
@@ -669,11 +674,17 @@ const STAYS=[
   {key:'freo',town:'Fremantle',base:'Fremantle WA',days:[4,5,6],when:'Wednesday to Friday'}
 ];
 const STAYFIELDS=[['name','Name'],['address','Address'],['checkin','Check-in'],['ref','Booking ref'],['notes','Notes (door code, wifi, host number)']];
-const TODO=[
-  ['flight','Flight home'],['car','Rental car, collected at Perth Airport'],['mr','Margaret River cabin'],['freo','Fremantle stay'],
-  ['lake-cave','Lake Cave tickets'],['wine','Tasting at Vasse Felix or Voyager Estate'],['bread','Dinner at Bread in Common'],
+/* The to-book list is editable by the group. It starts from these items; old ticks (details.done) carry over */
+const TODO_SEED=[
+  ['flight-in','Flight to Perth'],['flight','Flight home to Singapore'],['car','Rental car, collected at Perth Airport'],
+  ['mr','Margaret River cabin'],['freo','Fremantle stay'],['lake-cave','Lake Cave tickets'],
+  ['wine','Tasting at Vasse Felix or Voyager Estate'],['bread','Dinner at Bread in Common'],
   ['ferry','Rottnest ferry from B-Shed'],['bikes','E-bikes on Rottnest']
 ];
+const seeded=d=>Object.fromEntries(TODO_SEED.map(([k,label],n)=>[k,{label,at:n,done:!!(d.done||{})[k]}]));
+function seedTodos(d){ if(!d.todos) d.todos=seeded(d); }
+const todos=()=>Object.entries(details.todos||seeded(details)).sort((a,b)=>a[1].at-b[1].at);
+const booked=k=>{ const t=(details.todos||seeded(details))[k]; return !t || t.done; };
 const stay=k=>(details.stays||{})[k]||{};
 function tripDate(i){ if(!details.start) return null; const [y,m,d]=details.start.split('-').map(Number); return new Date(y,m-1,d+i); }
 const fmtDate=dt=>dt.toLocaleDateString('en-AU',{day:'numeric',month:'short'});
@@ -688,6 +699,8 @@ const allBtn=document.createElement('button'); allBtn.textContent='Whole trip'; 
 allBtn.onclick=()=>select(-1); pick.append(allBtn);
 const moneyBtn=document.createElement('button'); moneyBtn.textContent='Expenses'; moneyBtn.dataset.view=-2; moneyBtn.className='private money-tab';
 moneyBtn.onclick=()=>select(-2); pick.append(moneyBtn);
+const todoBtn=document.createElement('button'); todoBtn.textContent='To book'; todoBtn.dataset.view=-3; todoBtn.className='private';
+todoBtn.onclick=()=>select(-3); pick.append(todoBtn);
 const sep=document.createElement('span'); sep.className='sep private'; sep.setAttribute('aria-hidden','true'); pick.append(sep);
 const tabs=days.map((d,i)=>{const b=document.createElement('button'); b.dataset.view=i;
   b.onclick=()=>select(i); pick.append(b); return b});
@@ -744,15 +757,33 @@ function renderStays(){
 }
 document.getElementById('stays').addEventListener('toggle',e=>{ const k=e.target.dataset?.stay; if(k) stayOpen[k]=e.target.open; },true);
 function renderTodo(){
-  const done=details.done||{}, n=TODO.filter(([k])=>done[k]).length;
-  const el=document.getElementById('todo');
-  el.innerHTML=`<h2 id="todo-h">To book</h2><p class="hint">${n} of ${TODO.length} done. Shared with the group.</p><ul>${TODO.map(([k,label])=>`<li><label><input type="checkbox" data-todo="${k}"${done[k]?' checked':''}><span>${label}</span></label></li>`).join('')}</ul>`;
+  const list=todos(), n=list.filter(([,t])=>t.done).length, left=list.length-n;
+  const el=document.getElementById('todo'), box=el.querySelector('#addtodo input'), draft=box?.value||'', focused=box&&document.activeElement===box;
+  el.innerHTML=`<h2 id="todo-h">To book</h2><p class="hint">${n} of ${list.length} done. Shared with the group.</p>
+    <ul>${list.map(([k,t])=>`<li><label><input type="checkbox" data-todo="${k}"${t.done?' checked':''}><span>${esc(t.label)}</span></label><button class="x" type="button" data-rmtodo="${k}" aria-label="Remove ${esc(t.label)}">&times;</button></li>`).join('')}</ul>
+    <form class="addtodo" id="addtodo"><input name="t" placeholder="Add something to book" autocomplete="off" aria-label="New item"><button class="btn" type="submit">Add</button></form>`;
+  const nb=el.querySelector('#addtodo input'); nb.value=draft; if(focused) nb.focus();
+  todoBtn.innerHTML=`To book${left?` <span class="count">${left}</span>`:''}`;
+  document.getElementById('in-tag').hidden=booked('flight-in');
+  document.getElementById('home-tag').hidden=booked('flight');
 }
-document.getElementById('todo').addEventListener('change',e=>{
+const todoEl=document.getElementById('todo');
+todoEl.addEventListener('change',e=>{
   const k=e.target.dataset.todo; if(!k) return;
   const on=e.target.checked;
-  change(d=>{ d.done={...d.done,[k]:on}; }); renderTodo();
-  document.querySelector(`[data-todo="${k}"]`).focus();
+  change(d=>{ seedTodos(d); if(d.todos[k]) d.todos={...d.todos,[k]:{...d.todos[k],done:on}}; }); renderTodo();
+  document.querySelector(`[data-todo="${k}"]`)?.focus();
+});
+todoEl.addEventListener('click',e=>{
+  const k=e.target.closest('[data-rmtodo]')?.dataset.rmtodo; if(!k) return;
+  change(d=>{ seedTodos(d); d.todos={...d.todos}; delete d.todos[k]; }); renderTodo();
+});
+todoEl.addEventListener('submit',e=>{
+  e.preventDefault();
+  const label=e.target.elements.t.value.trim(); if(!label) return;
+  const id=uid(), at=Date.now();
+  change(d=>{ seedTodos(d); d.todos={...d.todos,[id]:{label,at,done:false}}; });
+  e.target.elements.t.value=''; renderTodo(); todoEl.querySelector('#addtodo input').focus();
 });
 
 /* Editor */
@@ -995,12 +1026,14 @@ let current=0;
 function select(i){
   current=i;
   document.querySelectorAll('#daypick button').forEach(b=>{ const on=+b.dataset.view===i; b.setAttribute('aria-pressed',on); if(on) pick.scrollTo({left:b.offsetLeft-pick.clientWidth/2+b.offsetWidth/2,behavior:'smooth'}); });
-  const layout=document.querySelector('.layout'), wasMoney=layout.classList.contains('money');
-  layout.classList.toggle('money',i===-2); document.documentElement.classList.toggle('view-money',i===-2);
-  if(i!==-2){ if(wasMoney) map.resize(); highlight(i); }
+  const layout=document.querySelector('.layout'), wasFull=layout.classList.contains('full'), full=i<=-2;
+  layout.classList.toggle('full',full); document.documentElement.classList.toggle('view-full',full);
+  if(!full){ if(wasFull) map.resize(); highlight(i); }
   document.querySelectorAll('.day').forEach((el,j)=>el.hidden = !(i===-1 || j===i));
   document.getElementById('days').classList.toggle('single', i!==-1);
-  document.querySelectorAll('[data-day]').forEach(el=>{const ds=el.dataset.day.split(',').map(Number); el.hidden = ds.includes(-1) ? i!==-1 : !(i===-1 || ds.includes(i))});
+  // data-day: -1 = Whole trip only, -2/-3 = the Expenses / To book tabs only, 0-6 = those days (and Whole trip)
+  document.querySelectorAll('[data-day]').forEach(el=>{const ds=el.dataset.day.split(',').map(Number);
+    el.hidden = ds.includes(-1) ? i!==-1 : ds.some(d=>d<-1) ? !ds.includes(i) : !(i===-1 || ds.includes(i))});
   const t=todayIndex();
   if(t!==null){ // during the trip: flying in only on arrival day, flying home from the second-last day
     const [flyIn,flyOut]=document.querySelectorAll('.flights .flight');
