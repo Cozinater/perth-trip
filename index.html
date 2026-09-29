@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Perth & Margaret River road trip</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
@@ -77,11 +77,21 @@ h1{font-family:var(--head);font-weight:800;font-size:clamp(2rem,5vw,3.4rem);line
 
 .mapframe{border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--ocean);height:clamp(320px,55vh,560px)}
 #map{width:100%;height:100%}
-.leaflet-container{font-family:var(--head);background:var(--ocean)}
+.maplibregl-map{font-family:var(--head)}
+.pinnum,.pindot{cursor:pointer}
 .pinnum{display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--sun);color:#fff;font-family:var(--head);font-weight:800;font-size:.85rem;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35)}
 .pindot{width:12px;height:12px;border-radius:50%;background:#fff;border:3px solid var(--ink)}
-.leaflet-popup-content{font-family:var(--body);font-size:.95rem;line-height:1.4;margin:10px 14px}
-.leaflet-popup-content strong{font-family:var(--head)}
+.maplibregl-popup-content{font-family:var(--body);font-size:.95rem;line-height:1.4;padding:10px 14px;color:#12324A;border-radius:10px}
+.maplibregl-popup-content strong{font-family:var(--head);font-size:1.05rem}
+.maplibregl-popup-content{padding:0;overflow:hidden}
+.maplibregl-popup-close-button{z-index:2;width:26px;height:26px;margin:6px;border-radius:50%;background:rgba(255,255,255,.9);font-size:18px;line-height:24px}
+.pop{width:260px}
+.ph{position:relative;height:150px;background:#E3E6DA}
+.ph img{width:100%;height:100%;object-fit:cover;display:block}
+.ph .cr{position:absolute;right:6px;bottom:5px;font-family:var(--head);font-size:.68rem;color:#fff;background:rgba(0,0,0,.45);padding:1px 6px;border-radius:6px;text-decoration:none}
+.pb{padding:10px 14px 12px}
+.pd{margin:.2rem 0 .5rem;font-size:.92rem}
+.gm{display:inline-block;margin-top:.35rem;font-family:var(--head);font-weight:700;font-size:.85rem;color:#fff;background:#12324A;padding:.4rem .75rem;border-radius:8px;text-decoration:none}
 .n{display:inline-flex;align-items:center;justify-content:center;width:1.35rem;height:1.35rem;border-radius:50%;background:var(--sun);color:#fff;font-family:var(--head);font-weight:800;font-size:.75rem;margin-right:.45rem;vertical-align:.15em}
 ol.stops li.has-pin{cursor:pointer}
 .day{padding:1.75rem 0;border-top:1px solid var(--line);scroll-margin-top:1rem}
@@ -217,7 +227,7 @@ const places = {
   "via-bunbury":{lat:-33.33,lng:115.67,via:true}
 };
 
-/* Map: Leaflet + OpenStreetMap/CARTO tiles, road routes from the public OSRM router */
+/* Map: MapLibre + OpenFreeMap tiles (free, no key), road routes from the public OSRM router */
 const paths=[
   ["perth-airport","fremantle","little-creatures"],
   ["b-shed","rottnest","hotel-rottnest","b-shed","freo-markets","fremantle"],
@@ -229,21 +239,29 @@ const paths=[
 ];
 const DAYCOLORS=["#D9952B","#2F7FA8","#5E7F68","#8A5A3C","#9B4F8F","#C0573E","#3E5C9A"];
 const dark=matchMedia('(prefers-color-scheme: dark)').matches && document.documentElement.dataset.theme!=='light';
-const map=L.map('map',{zoomSnap:.25}).setView([-32.9,115.5],8);
-L.tileLayer(dark?'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png':'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-  {subdomains:'abcd',maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'}).addTo(map);
-const layer=L.layerGroup().addTo(map);
-const LL=id=>[places[id].lat,places[id].lng];
+const map=new maplibregl.Map({
+  container:'map',
+  style: dark ? 'https://tiles.openfreemap.org/styles/dark' : 'https://tiles.openfreemap.org/styles/liberty',
+  center:[115.5,-32.9], zoom:7, cooperativeGestures:false
+});
+map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-left');
+const ready=new Promise(res=>map.on('load',()=>{
+  map.addSource('routes',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
+  const base={type:'line',source:'routes',layout:{'line-join':'round','line-cap':'round'}};
+  map.addLayer({...base,id:'routes-solid',filter:['==',['get','dash'],false],paint:{'line-color':['get','color'],'line-width':['get','width'],'line-opacity':.9}});
+  map.addLayer({...base,id:'routes-dash',filter:['==',['get','dash'],true],layout:{'line-join':'round','line-cap':'butt'},paint:{'line-color':['get','color'],'line-width':['get','width'],'line-dasharray':[2,2]}});
+  res();
+}));
+const LL=id=>[places[id].lng,places[id].lat];
 const island=new Set(["rottnest","hotel-rottnest"]);
 const routeCache={};
 async function roadLine(ids){
   const key=ids.join('>');
   if(key in routeCache) return routeCache[key];
   try{
-    const coords=ids.map(id=>places[id].lng+','+places[id].lat).join(';');
-    const r=await fetch(`https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`);
+    const r=await fetch(`https://router.project-osrm.org/route/v1/driving/${ids.map(id=>LL(id).join(',')).join(';')}?overview=full&geometries=geojson`);
     const j=await r.json(); if(j.code!=='Ok') throw new Error(j.code);
-    routeCache[key]=j.routes[0].geometry.coordinates.map(([x,y])=>[y,x]);
+    routeCache[key]=j.routes[0].geometry.coordinates;
   }catch(e){ routeCache[key]=null; }
   return routeCache[key];
 }
@@ -256,15 +274,13 @@ function legs(path){
   }
   return out;
 }
-let token=0; const markers={};
-async function drawRoute(i,color,weight,tok){
+let token=0, feats=[], pins=[]; const markers={};
+const push=(coords,color,width,dash)=>{feats.push({type:'Feature',properties:{color,width,dash},geometry:{type:'LineString',coordinates:coords}}); map.getSource('routes').setData({type:'FeatureCollection',features:feats});};
+async function drawRoute(i,color,width,tok){
   for(const leg of legs(paths[i])){
-    if(leg.type==='ferry'){
-      L.polyline(leg.ids.map(LL),{color,weight:weight-1,dashArray:'6 9',opacity:.95}).addTo(layer);
-    }else{
-      const line=await roadLine(leg.ids); if(tok!==token) return;
-      L.polyline(line||leg.ids.map(LL),{color,weight,opacity:.9,dashArray:line?null:'2 8'}).addTo(layer);
-    }
+    if(leg.type==='ferry'){ if(tok===token) push(leg.ids.map(LL),color,width-1,true); continue; }
+    const line=await roadLine(leg.ids); if(tok!==token) return;
+    push(line||leg.ids.map(LL),color,width,!line);
   }
 }
 function numbering(d){
@@ -272,25 +288,80 @@ function numbering(d){
   d.stops.forEach(([t,what,id])=>{ if(!id) return; if(!seen.has(id)) seen.set(id,{n:seen.size+1,items:[]}); seen.get(id).items.push(`<b>${t}</b> ${what}`); });
   return seen;
 }
-function highlight(i){
+/* Photos: lead image from the matching Wikipedia article (free, no key) */
+const WIKI={
+  "perth-airport":["Perth Airport"],
+  "perth-cbd":["Elizabeth Quay","Perth"],
+  "kings-park":["Lotterywest Federation Walkway","Kings Park, Western Australia"],
+  "fremantle":["Fremantle"],
+  "little-creatures":["Little Creatures","Fremantle Fishing Boat Harbour","Fremantle"],
+  "b-shed":["Victoria Quay, Fremantle","Fremantle Harbour"],
+  "freo-markets":["Fremantle Markets"],
+  "rottnest":["Quokka","Rottnest Island"],
+  "hotel-rottnest":["Hotel Rottnest","Thomson Bay","Rottnest Island"],
+  "bunbury":["Bunbury, Western Australia"],
+  "busselton":["Busselton Jetty"],
+  "meelup":["Meelup Beach","Meelup Regional Park","Geographe Bay"],
+  "vasse-felix":["Vasse Felix","Margaret River wine region"],
+  "margaret-river":["Margaret River, Western Australia"],
+  "charcuterie":["Margaret River, Western Australia"],
+  "surfers-point":["Prevelly, Western Australia","Surfers Point"],
+  "lake-cave":["Lake Cave"],
+  "boranup":["Boranup Forest","Eucalyptus diversicolor"]
+};
+const photoCache={};
+function photo(id){
+  if(photoCache[id]) return photoCache[id];
+  const titles=WIKI[id]||[places[id].name];
+  const url='https://en.wikipedia.org/w/api.php?action=query&format=json&formatversion=2&origin=*&redirects=1&prop=pageimages%7Cinfo&inprop=url&piprop=thumbnail&pithumbsize=560&titles='+titles.map(encodeURIComponent).join('%7C');
+  return photoCache[id]=fetch(url).then(r=>r.json()).then(j=>{
+    const q=j.query||{}, alias={};
+    (q.normalized||[]).forEach(n=>alias[n.from]=n.to);
+    (q.redirects||[]).forEach(n=>alias[n.from]=n.to);
+    const byTitle={}; (q.pages||[]).forEach(p=>byTitle[p.title]=p);
+    for(const t of titles){
+      let k=t; for(let n=0;n<3 && alias[k];n++) k=alias[k];
+      const p=byTitle[k]; if(p && p.thumbnail) return {src:p.thumbnail.source,url:p.fullurl};
+    }
+    return null;
+  }).catch(()=>null);
+}
+function popupHTML(id,detail){
+  return `<div class="pop"><div class="ph"></div><div class="pb"><strong>${places[id].name}</strong>${detail?`<div class="pd">${detail}</div>`:''}<a class="gm" href="${mapsLink(id)}" target="_blank" rel="noopener">Open in Google Maps</a></div></div>`;
+}
+function pin(id,html,cls,detail){
+  const el=document.createElement('div'); el.className=cls; el.innerHTML=html; el.title=places[id].name;
+  const pop=new maplibregl.Popup({offset:16,closeButton:true,maxWidth:'290px',focusAfterOpen:false}).setHTML(popupHTML(id,detail));
+  pop.on('open',async()=>{
+    const box=pop.getElement()?.querySelector('.ph'); if(!box || box.dataset.done) return;
+    box.dataset.done='1';
+    const p=await photo(id);
+    if(p){ box.innerHTML=`<img src="${p.src}" alt="${places[id].name}"><a class="cr" href="${p.url}" target="_blank" rel="noopener">Photo: Wikipedia</a>`; }
+    else box.remove();
+  });
+  const m=new maplibregl.Marker({element:el}).setLngLat(LL(id)).setPopup(pop).addTo(map);
+  pins.push(m); return m;
+}
+async function highlight(i){
   document.querySelectorAll('#daypick button').forEach((b,j)=>b.setAttribute('aria-pressed',j===i+1));
-  const tok=++token; layer.clearLayers(); for(const k in markers) delete markers[k];
+  const tok=++token;
+  await ready; if(tok!==token) return;
+  pins.forEach(m=>m.remove()); pins=[]; feats=[]; for(const k in markers) delete markers[k];
+  map.getSource('routes').setData({type:'FeatureCollection',features:[]});
   const sun=getComputedStyle(document.documentElement).getPropertyValue('--sun').trim()||'#D9952B';
   let pts=[];
   if(i===-1){
     days.forEach((d,j)=>{ drawRoute(j,DAYCOLORS[j],4,tok); pts.push(...paths[j].map(LL)); });
-    const all=new Set(paths.flat());
-    all.forEach(id=>L.marker(LL(id),{icon:L.divIcon({className:'',html:'<div class="pindot"></div>',iconSize:[12,12],iconAnchor:[6,6]})})
-      .bindTooltip(places[id].name,{direction:'top',offset:[0,-6]}).addTo(layer));
+    new Set(paths.flat()).forEach(id=>pin(id,'','pindot',''));
   }else{
     drawRoute(i,sun,5,tok);
-    numbering(days[i]).forEach(({n,items},id)=>{
-      markers[id]=L.marker(LL(id),{icon:L.divIcon({className:'',html:`<div class="pinnum">${n}</div>`,iconSize:[28,28],iconAnchor:[14,14]}),zIndexOffset:100-n})
-        .bindPopup(`<strong>${places[id].name}</strong><br>${items.join('<br>')}`).addTo(layer);
+    [...numbering(days[i])].reverse().forEach(([id,{n,items}])=>{
+      markers[id]=pin(id,String(n),'pinnum',items.join('<br>'));
     });
     pts=paths[i].map(LL);
   }
-  map.fitBounds(L.latLngBounds(pts),{padding:[40,40],maxZoom:14});
+  const bounds=pts.reduce((b,p)=>b.extend(p),new maplibregl.LngLatBounds(pts[0],pts[0]));
+  map.fitBounds(bounds,{padding:50,maxZoom:14,duration:600});
 }
 
 const pick=document.getElementById('daypick');
@@ -310,7 +381,7 @@ days.forEach((d,i)=>{
   d.stops.forEach(([t,what,id,note,cook])=>{
     const li=document.createElement('li');
     const badge=id?`<span class="n">${nums.get(id).n}</span>`:'';
-    if(id){ li.className='has-pin'; li.addEventListener('click',e=>{ if(e.target.closest('a')) return; const m=markers[id]; if(m){ map.panTo(m.getLatLng()); m.openPopup(); } }); }
+    if(id){ li.className='has-pin'; li.addEventListener('click',e=>{ if(e.target.closest('a')) return; const m=markers[id]; if(m){ map.easeTo({center:m.getLngLat()}); if(!m.getPopup().isOpen()) m.togglePopup(); } }); }
     li.innerHTML=`<span class="t">${t}</span><p class="what${cook?' cook':''}">${badge}<strong>${what}</strong>${note?`<span class="note">${note}</span>`:''}${id&&!cook?` <a href="${mapsLink(id)}" target="_blank" rel="noopener">Open in Maps</a>`:''}</p>`;
     ol.append(li);
   });
