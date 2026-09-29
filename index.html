@@ -329,24 +329,43 @@ function photo(id){
 function popupHTML(id,detail){
   return `<div class="pop"><div class="ph"></div><div class="pb"><strong>${places[id].name}</strong>${detail?`<div class="pd">${detail}</div>`:''}<a class="gm" href="${mapsLink(id)}" target="_blank" rel="noopener">Open in Google Maps</a></div></div>`;
 }
+/* Popups open on hover (desktop) or tap (touch), and stay open while the pointer is on them */
+let openPop=null, closeT=null;
+function showPop(pop,lngLat){
+  clearTimeout(closeT);
+  if(openPop && openPop!==pop) openPop.remove();
+  if(!pop.isOpen()) pop.setLngLat(lngLat).addTo(map);
+  openPop=pop;
+}
+function hideSoon(pop){
+  clearTimeout(closeT);
+  closeT=setTimeout(()=>{ pop.remove(); if(openPop===pop) openPop=null; },250);
+}
 function pin(id,html,cls,detail){
-  const el=document.createElement('div'); el.className=cls; el.innerHTML=html; el.title=places[id].name;
+  const el=document.createElement('div'); el.className=cls; el.innerHTML=html; el.dataset.id=id;
   const pop=new maplibregl.Popup({offset:16,closeButton:true,maxWidth:'290px',focusAfterOpen:false}).setHTML(popupHTML(id,detail));
   pop.on('open',async()=>{
-    const box=pop.getElement()?.querySelector('.ph'); if(!box || box.dataset.done) return;
+    const pe=pop.getElement();
+    pe.addEventListener('mouseenter',()=>clearTimeout(closeT));
+    pe.addEventListener('mouseleave',()=>hideSoon(pop));
+    const box=pe.querySelector('.ph'); if(!box || box.dataset.done) return;
     box.dataset.done='1';
     const p=await photo(id);
     if(p){ box.innerHTML=`<img src="${p.src}" alt="${places[id].name}"><a class="cr" href="${p.url}" target="_blank" rel="noopener">Photo: Wikipedia</a>`; }
     else box.remove();
   });
-  const m=new maplibregl.Marker({element:el}).setLngLat(LL(id)).setPopup(pop).addTo(map);
-  pins.push(m); return m;
+  el.addEventListener('mouseenter',()=>showPop(pop,LL(id)));
+  el.addEventListener('mouseleave',()=>hideSoon(pop));
+  el.addEventListener('click',e=>{ e.stopPropagation(); showPop(pop,LL(id)); });
+  const m=new maplibregl.Marker({element:el}).setLngLat(LL(id)).addTo(map);
+  el.setAttribute('aria-label',places[id].name);
+  m.pop=pop; pins.push(m); return m;
 }
 async function highlight(i){
   document.querySelectorAll('#daypick button').forEach((b,j)=>b.setAttribute('aria-pressed',j===i+1));
   const tok=++token;
   await ready; if(tok!==token) return;
-  pins.forEach(m=>m.remove()); pins=[]; feats=[]; for(const k in markers) delete markers[k];
+  pins.forEach(m=>{m.pop.remove(); m.remove();}); pins=[]; openPop=null; feats=[]; for(const k in markers) delete markers[k];
   map.getSource('routes').setData({type:'FeatureCollection',features:[]});
   const sun=getComputedStyle(document.documentElement).getPropertyValue('--sun').trim()||'#D9952B';
   let pts=[];
@@ -381,7 +400,7 @@ days.forEach((d,i)=>{
   d.stops.forEach(([t,what,id,note,cook])=>{
     const li=document.createElement('li');
     const badge=id?`<span class="n">${nums.get(id).n}</span>`:'';
-    if(id){ li.className='has-pin'; li.addEventListener('click',e=>{ if(e.target.closest('a')) return; const m=markers[id]; if(m){ map.easeTo({center:m.getLngLat()}); if(!m.getPopup().isOpen()) m.togglePopup(); } }); }
+    if(id){ li.className='has-pin'; li.addEventListener('click',e=>{ if(e.target.closest('a')) return; const m=markers[id]; if(m){ map.easeTo({center:m.getLngLat()}); showPop(m.pop,m.getLngLat()); } }); }
     li.innerHTML=`<span class="t">${t}</span><p class="what${cook?' cook':''}">${badge}<strong>${what}</strong>${note?`<span class="note">${note}</span>`:''}${id&&!cook?` <a href="${mapsLink(id)}" target="_blank" rel="noopener">Open in Maps</a>`:''}</p>`;
     ol.append(li);
   });
