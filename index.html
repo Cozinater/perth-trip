@@ -33,13 +33,25 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font
 a{color:inherit}
 a:focus-visible,button:focus-visible{outline:2px solid var(--sun);outline-offset:3px;border-radius:4px}
 
-.wrap{max-width:1180px;margin:0 auto;padding:2rem 1.25rem 4rem;display:grid;gap:2.5rem;grid-template-columns:1fr}
+.page{max-width:1400px;margin:0 auto;padding:0 1.25rem 3rem}
+.top{padding:1.5rem 0 .75rem}
+.top h1{margin:0}
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--bg);display:flex;gap:.4rem;overflow-x:auto;scrollbar-width:none;padding:.6rem 1.25rem;margin:0 -1.25rem;border-bottom:1px solid var(--line)}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{flex:0 0 auto;font-family:var(--head);font-size:.95rem;border:1px solid var(--line);background:transparent;color:var(--ink);padding:.4rem .9rem;border-radius:999px;cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.layout{display:grid;grid-template-columns:minmax(0,1fr);gap:1.25rem;padding-top:1rem}
+.mapcol,.panel{min-width:0}
+.mapcol .mapframe{height:45vh;min-height:260px}
 @media (min-width:900px){
-  .wrap{grid-template-columns:minmax(300px,380px) 1fr;align-items:start;padding-top:3rem}
-  .mapcol{position:sticky;top:calc(env(safe-area-inset-top,0px) + 1.5rem)}
+  .layout{grid-template-columns:minmax(0,1.5fr) minmax(360px,460px);gap:2.5rem;align-items:start;padding-top:1.25rem}
+  .mapcol{position:sticky;top:calc(env(safe-area-inset-top,0px) + 4.25rem);height:calc(100vh - 10.5rem);display:flex;flex-direction:column}
+  .mapcol .mapframe{flex:1;height:auto;min-height:0}
 }
-
-h1{font-family:var(--head);font-weight:800;font-size:clamp(2.4rem,6vw,3.6rem);line-height:.95;letter-spacing:-.02em;margin:0 0 .75rem}
+.panel .flights{margin-bottom:1.5rem}
+[hidden]{display:none !important}
+#days.single .day{border-top:0;padding-top:0}
+h1{font-family:var(--head);font-weight:800;font-size:clamp(2rem,5vw,3.4rem);line-height:1;letter-spacing:-.02em;margin:0 0 .75rem}
 .lede{color:var(--muted);margin:0 0 1.25rem;max-width:34ch}
 .flights{display:grid;gap:.75rem;margin:0 0 1rem}
 .flight{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:.85rem 1rem .8rem}
@@ -63,10 +75,6 @@ h1{font-family:var(--head);font-weight:800;font-size:clamp(2.4rem,6vw,3.6rem);li
 
 .mapframe{border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--ocean);height:clamp(320px,55vh,560px)}
 .mapframe iframe{width:100%;height:100%;border:0;display:block}
-.daypick{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:1rem}
-.daypick button{font-family:var(--head);font-size:.9rem;border:1px solid var(--line);background:transparent;color:var(--ink);padding:.35rem .75rem;border-radius:999px;cursor:pointer}
-.daypick button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-
 .day{padding:1.75rem 0;border-top:1px solid var(--line);scroll-margin-top:1rem}
 .day:first-child{border-top:0;padding-top:0}
 .day h2{font-family:var(--head);font-weight:700;font-size:1.7rem;line-height:1.1;margin:0 0 .2rem;letter-spacing:-.01em}
@@ -94,12 +102,16 @@ ol.stops li{display:grid;grid-template-columns:5.5rem 1fr;gap:.25rem 1rem;paddin
 </style>
 </head>
 <body>
-<main class="wrap">
-  <aside class="mapcol">
-    <h1>Perth to Margaret River, six days</h1>
-    <p class="lede">Fremantle, a day on Rottnest, three nights of home cooking down south, then back up to Perth.</p>
+<main class="page">
+  <header class="top"><h1>Perth to Margaret River, six days</h1></header>
+  <nav class="tabs" id="daypick" aria-label="Choose a day"></nav>
+  <div class="layout">
+    <div class="mapcol">
+    <div class="mapframe"><iframe id="map" title="Google Map of the route" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div>
+    </div>
+    <div class="panel">
     <div class="flights">
-      <article class="flight">
+      <article class="flight" data-day="0">
         <p class="leg"><b>Flying in</b> Saturday</p>
         <div class="route">
           <div class="end"><span class="code">SIN</span><span class="tm">12:00 pm</span><span class="ap">Changi</span></div>
@@ -108,7 +120,7 @@ ol.stops li{display:grid;grid-template-columns:5.5rem 1fr;gap:.25rem 1rem;paddin
         </div>
         <p class="meta">Scoot TR 8</p>
       </article>
-      <article class="flight">
+      <article class="flight" data-day="6">
         <p class="leg"><b>Flying home</b> Friday</p>
         <div class="route">
           <div class="end"><span class="code">PER</span><span class="tm">6:30 pm</span><span class="ap">Perth Airport</span></div>
@@ -118,12 +130,10 @@ ol.stops li{display:grid;grid-template-columns:5.5rem 1fr;gap:.25rem 1rem;paddin
         <p class="meta">Scoot, flight number to confirm</p>
       </article>
     </div>
-    <p class="drive">About 700 km of driving, all in one rental car.</p>
-    <div class="mapframe"><iframe id="map" title="Google Map of the route" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div>
-    <div class="daypick" id="daypick" aria-label="Highlight a day on the map"></div>
-  </aside>
-
-  <section id="days"></section>
+    <p class="drive" data-day="-1">About 700 km of driving, all in one rental car.</p>
+      <section id="days"></section>
+    </div>
+  </div>
 </main>
 
 <script>
@@ -167,7 +177,7 @@ const days = [
     ["3:00 pm","Check in and wander Elizabeth Quay","perth-cbd"],
     ["7:30 pm","Last-night dinner in the city","perth-cbd"]
   ]},
-  { title:"Kings Park and home", route:["Elizabeth Quay Perth","Lotterywest Federation Walkway Kings Park","Perth Airport"], day:"Friday", base:"Flight home", stops:[
+  { title:"Kings Park and home", route:["Elizabeth Quay Perth","Lotterywest Federation Walkway Kings Park","Perth Airport"], day:"Friday", base:null, stops:[
     ["10:00 am","Late check-out and a long brunch in the city","perth-cbd"],
     ["12:30 pm","Treetop walkway in Kings Park","kings-park","Free, with views over the river and city."],
     ["3:30 pm","Return the car and check in","perth-airport"],
@@ -207,15 +217,18 @@ function embedUrl(i){
   const r = i===-1 ? wholeTrip : days[i].route;
   if(!r){ // ferry day: show the island
     return API_KEY ? `https://www.google.com/maps/embed/v1/place?key=${API_KEY}&q=${E("Rottnest Island")}`
-                   : `https://maps.google.com/maps?q=${E("Rottnest Island WA")}&z=12&output=embed`;
+                   : keyless(i);
   }
   if(API_KEY){
     let u=`https://www.google.com/maps/embed/v1/directions?key=${API_KEY}&mode=driving&origin=${E(r[0])}&destination=${E(r[r.length-1])}`;
     if(r.length>2) u+='&waypoints='+r.slice(1,-1).map(E).join('|');
     return u;
   }
-  return `https://maps.google.com/maps?saddr=${E(r[0])}&daddr=${r.slice(1).map(E).join('+to:')}&output=embed`;
+  return keyless(i);
 }
+/* Without a key Google won't draw routes, so frame each day's area instead */
+const views={"-1":[-32.95,115.45,8],0:[-31.98,115.86,10],1:[-32.02,115.62,11],2:[-33.2,115.5,8],3:[-34.03,115.06,11],4:[-33.9,115.03,11],5:[-32.8,115.5,8],6:[-31.955,115.9,11]};
+function keyless(i){const [la,ln,z]=views[i];return `https://maps.google.com/maps?ll=${la},${ln}&z=${z}&t=m&output=embed`}
 const frame=document.getElementById('map');
 let current=null, timer=null;
 function highlight(i, now){
@@ -227,16 +240,15 @@ function highlight(i, now){
 
 const pick=document.getElementById('daypick');
 const allBtn=document.createElement('button'); allBtn.textContent='Whole trip';
-allBtn.onclick=()=>highlight(-1,true); pick.append(allBtn);
+allBtn.onclick=()=>select(-1); pick.append(allBtn);
 days.forEach((d,i)=>{const b=document.createElement('button');b.textContent=d.day.slice(0,3);
-  b.onclick=()=>{highlight(i,true); document.getElementById('day'+i).scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'})};
-  pick.append(b)});
+  b.onclick=()=>select(i); pick.append(b)});
 const mapsLink=id=>{const p=places[id];return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.q||p.name)};
 const routeLink=r=>{const e=encodeURIComponent;let u='https://www.google.com/maps/dir/?api=1&travelmode=driving&origin='+e(r[0])+'&destination='+e(r[r.length-1]);if(r.length>2)u+='&waypoints='+r.slice(1,-1).map(e).join('%7C');return u};
 const box=document.getElementById('days');
 days.forEach((d,i)=>{
   const s=document.createElement('article'); s.className='day'; s.id='day'+i;
-  s.innerHTML=`<h2>${d.title}</h2><p class="when">${d.day} <span>/ sleep in ${d.base}</span></p>`;
+  s.innerHTML=`<h2>${d.title}</h2><p class="when">${d.day}${d.base?` <span>/ sleep in ${d.base}</span>`:''}</p>`;
   if(d.route) s.insertAdjacentHTML('beforeend',`<a class="go" href="${routeLink(d.route)}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3 3 10.5l7 2.5 2.5 7z"/></svg>Open route in Google Maps</a>`);
   const ol=document.createElement('ol'); ol.className='stops';
   d.stops.forEach(([t,what,id,note,cook])=>{
@@ -251,9 +263,14 @@ days.forEach((d,i)=>{
   box.append(s);
 });
 
-const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting) highlight(+e.target.id.slice(3))})},{rootMargin:'-40% 0px -55% 0px'});
-document.querySelectorAll('.day').forEach(d=>io.observe(d));
-highlight(-1,true);
+function select(i){
+  highlight(i,true);
+  document.querySelectorAll('.day').forEach((el,j)=>el.hidden = !(i===-1 || j===i));
+  document.getElementById('days').classList.toggle('single', i!==-1);
+  document.querySelectorAll('[data-day]').forEach(el=>{const d=+el.dataset.day; el.hidden = d===-1 ? i!==-1 : !(i===-1 || d===i)});
+  const fl=document.querySelector('.flights'); fl.hidden=[...fl.children].every(c=>c.hidden);
+}
+select(0);
 </script>
 </body>
 </html>
