@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Perth & Margaret River road trip</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
@@ -74,7 +76,14 @@ h1{font-family:var(--head);font-weight:800;font-size:clamp(2rem,5vw,3.4rem);line
 .facts b{font-weight:700}
 
 .mapframe{border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--ocean);height:clamp(320px,55vh,560px)}
-.mapframe iframe{width:100%;height:100%;border:0;display:block}
+#map{width:100%;height:100%}
+.leaflet-container{font-family:var(--head);background:var(--ocean)}
+.pinnum{display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--sun);color:#fff;font-family:var(--head);font-weight:800;font-size:.85rem;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35)}
+.pindot{width:12px;height:12px;border-radius:50%;background:#fff;border:3px solid var(--ink)}
+.leaflet-popup-content{font-family:var(--body);font-size:.95rem;line-height:1.4;margin:10px 14px}
+.leaflet-popup-content strong{font-family:var(--head)}
+.n{display:inline-flex;align-items:center;justify-content:center;width:1.35rem;height:1.35rem;border-radius:50%;background:var(--sun);color:#fff;font-family:var(--head);font-weight:800;font-size:.75rem;margin-right:.45rem;vertical-align:.15em}
+ol.stops li.has-pin{cursor:pointer}
 .day{padding:1.75rem 0;border-top:1px solid var(--line);scroll-margin-top:1rem}
 .day:first-child{border-top:0;padding-top:0}
 .day h2{font-family:var(--head);font-weight:700;font-size:1.7rem;line-height:1.1;margin:0 0 .2rem;letter-spacing:-.01em}
@@ -107,7 +116,7 @@ ol.stops li{display:grid;grid-template-columns:5.5rem 1fr;gap:.25rem 1rem;paddin
   <nav class="tabs" id="daypick" aria-label="Choose a day"></nav>
   <div class="layout">
     <div class="mapcol">
-    <div class="mapframe"><iframe id="map" title="Google Map of the route" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div>
+    <div class="mapframe"><div id="map" role="region" aria-label="Map of the route"></div></div>
     </div>
     <div class="panel">
     <div class="flights">
@@ -208,34 +217,80 @@ const places = {
   "via-bunbury":{lat:-33.33,lng:115.67,via:true}
 };
 
-/* Optional: paste a Google Maps Embed API key here for the official embed.
-   Leave empty to use the keyless embed. */
-const API_KEY = "";
-const E=encodeURIComponent;
-const wholeTrip=["Perth Airport","Fremantle WA","Bunbury Farmers Market","Busselton Jetty","Margaret River WA","Meelup Beach","Elizabeth Quay Perth"];
-function embedUrl(i){
-  const r = i===-1 ? wholeTrip : days[i].route;
-  if(!r){ // ferry day: show the island
-    return API_KEY ? `https://www.google.com/maps/embed/v1/place?key=${API_KEY}&q=${E("Rottnest Island")}`
-                   : keyless(i);
-  }
-  if(API_KEY){
-    let u=`https://www.google.com/maps/embed/v1/directions?key=${API_KEY}&mode=driving&origin=${E(r[0])}&destination=${E(r[r.length-1])}`;
-    if(r.length>2) u+='&waypoints='+r.slice(1,-1).map(E).join('|');
-    return u;
-  }
-  return keyless(i);
+/* Map: Leaflet + OpenStreetMap/CARTO tiles, road routes from the public OSRM router */
+const paths=[
+  ["perth-airport","fremantle","little-creatures"],
+  ["b-shed","rottnest","hotel-rottnest","b-shed","freo-markets","fremantle"],
+  ["fremantle","bunbury","busselton","margaret-river"],
+  ["margaret-river","boranup","lake-cave","margaret-river"],
+  ["margaret-river","vasse-felix","charcuterie","surfers-point","margaret-river"],
+  ["margaret-river","meelup","perth-cbd"],
+  ["perth-cbd","kings-park","perth-airport"]
+];
+const DAYCOLORS=["#D9952B","#2F7FA8","#5E7F68","#8A5A3C","#9B4F8F","#C0573E","#3E5C9A"];
+const dark=matchMedia('(prefers-color-scheme: dark)').matches && document.documentElement.dataset.theme!=='light';
+const map=L.map('map',{zoomSnap:.25}).setView([-32.9,115.5],8);
+L.tileLayer(dark?'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png':'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+  {subdomains:'abcd',maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'}).addTo(map);
+const layer=L.layerGroup().addTo(map);
+const LL=id=>[places[id].lat,places[id].lng];
+const island=new Set(["rottnest","hotel-rottnest"]);
+const routeCache={};
+async function roadLine(ids){
+  const key=ids.join('>');
+  if(key in routeCache) return routeCache[key];
+  try{
+    const coords=ids.map(id=>places[id].lng+','+places[id].lat).join(';');
+    const r=await fetch(`https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`);
+    const j=await r.json(); if(j.code!=='Ok') throw new Error(j.code);
+    routeCache[key]=j.routes[0].geometry.coordinates.map(([x,y])=>[y,x]);
+  }catch(e){ routeCache[key]=null; }
+  return routeCache[key];
 }
-/* Without a key Google won't draw routes, so frame each day's area instead */
-const views={"-1":[-32.95,115.45,8],0:[-31.98,115.86,10],1:[-32.02,115.62,11],2:[-33.2,115.5,8],3:[-34.03,115.06,11],4:[-33.9,115.03,11],5:[-32.8,115.5,8],6:[-31.955,115.9,11]};
-function keyless(i){const [la,ln,z]=views[i];return `https://maps.google.com/maps?ll=${la},${ln}&z=${z}&t=m&output=embed`}
-const frame=document.getElementById('map');
-let current=null, timer=null;
-function highlight(i, now){
+function legs(path){
+  const out=[];
+  for(let k=0;k<path.length-1;k++){
+    const a=path[k], b=path[k+1], type=(island.has(a)||island.has(b))?'ferry':'drive';
+    const last=out[out.length-1];
+    if(last && last.type==='drive' && type==='drive') last.ids.push(b); else out.push({type,ids:[a,b]});
+  }
+  return out;
+}
+let token=0; const markers={};
+async function drawRoute(i,color,weight,tok){
+  for(const leg of legs(paths[i])){
+    if(leg.type==='ferry'){
+      L.polyline(leg.ids.map(LL),{color,weight:weight-1,dashArray:'6 9',opacity:.95}).addTo(layer);
+    }else{
+      const line=await roadLine(leg.ids); if(tok!==token) return;
+      L.polyline(line||leg.ids.map(LL),{color,weight,opacity:.9,dashArray:line?null:'2 8'}).addTo(layer);
+    }
+  }
+}
+function numbering(d){
+  const seen=new Map();
+  d.stops.forEach(([t,what,id])=>{ if(!id) return; if(!seen.has(id)) seen.set(id,{n:seen.size+1,items:[]}); seen.get(id).items.push(`<b>${t}</b> ${what}`); });
+  return seen;
+}
+function highlight(i){
   document.querySelectorAll('#daypick button').forEach((b,j)=>b.setAttribute('aria-pressed',j===i+1));
-  if(i===current) return;
-  current=i; clearTimeout(timer);
-  timer=setTimeout(()=>{frame.src=embedUrl(i)}, now?0:450);
+  const tok=++token; layer.clearLayers(); for(const k in markers) delete markers[k];
+  const sun=getComputedStyle(document.documentElement).getPropertyValue('--sun').trim()||'#D9952B';
+  let pts=[];
+  if(i===-1){
+    days.forEach((d,j)=>{ drawRoute(j,DAYCOLORS[j],4,tok); pts.push(...paths[j].map(LL)); });
+    const all=new Set(paths.flat());
+    all.forEach(id=>L.marker(LL(id),{icon:L.divIcon({className:'',html:'<div class="pindot"></div>',iconSize:[12,12],iconAnchor:[6,6]})})
+      .bindTooltip(places[id].name,{direction:'top',offset:[0,-6]}).addTo(layer));
+  }else{
+    drawRoute(i,sun,5,tok);
+    numbering(days[i]).forEach(({n,items},id)=>{
+      markers[id]=L.marker(LL(id),{icon:L.divIcon({className:'',html:`<div class="pinnum">${n}</div>`,iconSize:[28,28],iconAnchor:[14,14]}),zIndexOffset:100-n})
+        .bindPopup(`<strong>${places[id].name}</strong><br>${items.join('<br>')}`).addTo(layer);
+    });
+    pts=paths[i].map(LL);
+  }
+  map.fitBounds(L.latLngBounds(pts),{padding:[40,40],maxZoom:14});
 }
 
 const pick=document.getElementById('daypick');
@@ -251,9 +306,12 @@ days.forEach((d,i)=>{
   s.innerHTML=`<h2>${d.title}</h2><p class="when">${d.day}${d.base?` <span>/ sleep in ${d.base}</span>`:''}</p>`;
   if(d.route) s.insertAdjacentHTML('beforeend',`<a class="go" href="${routeLink(d.route)}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3 3 10.5l7 2.5 2.5 7z"/></svg>Open route in Google Maps</a>`);
   const ol=document.createElement('ol'); ol.className='stops';
+  const nums=numbering(d);
   d.stops.forEach(([t,what,id,note,cook])=>{
     const li=document.createElement('li');
-    li.innerHTML=`<span class="t">${t}</span><p class="what${cook?' cook':''}"><strong>${what}</strong>${note?`<span class="note">${note}</span>`:''}${id&&!cook?` <a href="${mapsLink(id)}" target="_blank" rel="noopener">Open in Maps</a>`:''}</p>`;
+    const badge=id?`<span class="n">${nums.get(id).n}</span>`:'';
+    if(id){ li.className='has-pin'; li.addEventListener('click',e=>{ if(e.target.closest('a')) return; const m=markers[id]; if(m){ map.panTo(m.getLatLng()); m.openPopup(); } }); }
+    li.innerHTML=`<span class="t">${t}</span><p class="what${cook?' cook':''}">${badge}<strong>${what}</strong>${note?`<span class="note">${note}</span>`:''}${id&&!cook?` <a href="${mapsLink(id)}" target="_blank" rel="noopener">Open in Maps</a>`:''}</p>`;
     ol.append(li);
   });
   s.append(ol);
@@ -264,7 +322,7 @@ days.forEach((d,i)=>{
 });
 
 function select(i){
-  highlight(i,true);
+  highlight(i);
   document.querySelectorAll('.day').forEach((el,j)=>el.hidden = !(i===-1 || j===i));
   document.getElementById('days').classList.toggle('single', i!==-1);
   document.querySelectorAll('[data-day]').forEach(el=>{const d=+el.dataset.day; el.hidden = d===-1 ? i!==-1 : !(i===-1 || d===i)});
